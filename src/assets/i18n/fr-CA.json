@@ -1,0 +1,5 @@
+{
+  "UNSUPPORTED_BROWSER": "Ce navigateur n’est plus pris en charge",
+  "UNSUPPORTED_BROWSER_INSTALL": "Veuillez installer et utiliser la version la plus récente d’un des navigateurs suivants :",
+  "UNSUPPORTED_BROWSER_TXT": "Votre navigateur est daté, et pourrait ne pas avoir les dernières mises à jour en matière de sécurité. Cette application cessera de supporter ce navigateur bientôt. Si vous poursuivez l’utilisation de ce navigateur, il se pourrait que vous ne soyez plus en mesure d’accéder à cette application dans le futur."
+}
