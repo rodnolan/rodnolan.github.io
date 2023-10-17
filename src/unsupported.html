@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>UPGRADE YOUR BROWSER YOU WILL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+      integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+      crossorigin="anonymous"
+    />
+  </head>
+
+  <body onload="displayBrowserWarning()">
+    <div id="warning-message" style="display: none">
+      <div class="modal-header">
+        <h4 class="modal-title" id="unsupported-browser-title"></h4>
+      </div>
+      <div class="modal-body">
+        <p id="unsupported-browser-message"></p>
+        <p id="unsupported-browser-install"></p>
+        <hr />
+
+        <div class="row my-4">
+          <div class="col">
+            <button
+              class="btn btn-block btn-light"
+              onclick="openLink('https://www.google.com/chrome/')"
+            >
+              <img
+                src="assets/images/chrome.png"
+                height="60px"
+                alt="download Google Chrome"
+              />
+              <span style="white-space: nowrap">Google Chrome</span>
+            </button>
+          </div>
+          <div class="col">
+            <button
+              class="btn btn-block btn-light"
+              onclick="openLink('https://www.microsoft.com/edge')"
+            >
+              <img
+                src="assets/images/edge.png"
+                height="60px"
+                alt="download Microsoft Edge"
+              />
+              <span style="white-space: nowrap">Microsoft Edge</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      /**
+       * Opens a URL in a new window
+       */
+      function openLink(url) {
+        window.open(url, "_blank");
+      }
+
+      /**
+       * asynchronously fetches the translations file from the url provided
+       *
+       * @returns object containing translated key/value pairs
+       */
+      async function fetchTranslations(url) {
+        try {
+          const response = await fetch(url);
+          const responseAsJSON = response.ok ? await response.json() : null;
+          const translations = responseAsJSON && responseAsJSON;
+
+          if (translations) {
+            return translations;
+          } else {
+            throw new Error("translations could not be fetched");
+          }
+        } catch (error) {
+          console.error(error.message);
+        }
+      }
+
+      /**
+       * validates the format of the locale string
+       * all translation file names follow the convention: xx-XX.json
+       * so the locale string must match the `xx-XX` format
+       *
+       * @returns boolean
+       */
+      function isValidLocale(str) {
+        return str.length === 5 && str[2] === "-";
+      }
+
+      /**
+       * get the user's preferred locale from either
+       * 1) the cookie, or
+       * 2) the browser's language setting
+       *
+       * @returns string
+       */
+      function getLocale(cookieName) {
+        const searchFor = cookieName + "=";
+        const cookies = document.cookie;
+        const cookiesArr = document.cookie.split(";");
+        for (let i = 0; i < cookiesArr.length; i++) {
+          let cookie = cookiesArr[i];
+          // strip out any/all leading spaces
+          while (cookie.charAt(0) == " ") {
+            cookie = cookie.substring(1);
+          }
+          if (cookie.indexOf(searchFor) == 0) {
+            return cookie.substring(searchFor.length, cookie.length);
+          }
+        }
+        const navLang = navigator.language; // this could potentially be a 2-letter code
+        return isValidLocale(navLang) ? navLang : "en-US";
+      }
+
+      /**
+       * Retreives the translated string for the key provided
+       * @returns string
+       */
+      function translate(key) {
+        return translations[key] || key;
+      }
+
+      /**
+       * displays the "old browser warning" markup and populates the elements from translations
+       */
+      async function displayBrowserWarning() {
+        let locale = getLocale("locale");
+        translations = await fetchTranslations(
+          "assets/i18n/" + locale + ".json"
+        );
+
+        document.getElementById("unsupported-browser-title").innerText =
+          translate("UNSUPPORTED_BROWSER");
+        document.getElementById("unsupported-browser-message").innerText =
+          translate("UNSUPPORTED_BROWSER_TXT");
+        document.getElementById("unsupported-browser-install").innerText =
+          translate("UNSUPPORTED_BROWSER_INSTALL");
+
+        document.getElementById("warning-message").style.display = "block";
+      }
+    </script>
+  </body>
+</html>
+
+<!--
+  The original approach I took was inspired by https://stackoverflow.com/questions/46116284/angular-2-how-to-show-warning-page-if-browser-is-unsupported
+  Ultimately, I don't care about which specific browser you're using. I only want to know if the angular app will work or not.
+
+  If the browser doesn't support whatever angular throws at it, the app-root tag remains unchanged.
+  However, if the browser _does_ support angular, the app root tag will be decorated with some new
+  attributes, like this:
+  <app-root _nghost-ng-c105734841 ng-version="16.2.9">...</app-root>
+
+  This is the most reliable way to tell if the current browser is capable of handling the angular app.
+  AND... it's future proof because it's not tied to any specific angular version or browser version.
+
+  Trying to interpret the user agent string reported by the browser is not recommended. See:
+  https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
+
+
+  YET... the older browsers still try to load the modern JS code and start throwing errors.
+  This prevents my brilliant code from running and I'm back to where I started.
+
+  This new approach is based on suggestions found here:
+  https://stackoverflow.com/questions/68690981/how-to-display-internet-explorer-not-supported-in-angular-without-importing-poll
+-->

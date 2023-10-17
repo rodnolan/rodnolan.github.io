@@ -22,7 +22,6 @@ $ git push
 
 Visit [the deployed site](https://rodnolan.github.io) in your browser.
 
-
 ## Background on repository configuration
 
 See [here](https://medium.com/swlh/how-to-deploy-an-angular-app-to-github-pages-without-using-any-libraries-step-by-step-guide-cfe96fb0c879)
