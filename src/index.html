@@ -11,6 +11,7 @@
   </head>
   <body>
     <script type="text/javascript">
+      console.log(window.navigator.userAgent);
       var unsupportedBrowser = /msie\s|trident/i.test(window.navigator.userAgent);
       if (unsupportedBrowser) {
         window.location.href = "./unsupported.html";
