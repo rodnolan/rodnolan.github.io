@@ -18,8 +18,11 @@
       //   var elem = document.createElement("app-root");
       //   document.body.appendChild(elem);
       // }
+      console.log('adding error event listener to window')
       window.addEventListener("error", function (event) {
-        console.log(event.error);
+        setTimeout(function() {
+          console.log(event.error);
+        }, 5000);
       });
     </script>
   </body>
