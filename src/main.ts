@@ -2,9 +2,9 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
 
-try {
+// try {
   platformBrowserDynamic().bootstrapModule(AppModule)
     .catch(err => console.error(err));
-} catch (e) {
-  window.location.href = "./unsupported.html";
-}
+// } catch (e) {
+//   window.location.href = "./unsupported.html";
+// }
