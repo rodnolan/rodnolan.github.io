@@ -228,7 +228,8 @@
        * redirects to the angular app for modern browsers
        */
       function handleOldBrowsers() {
-        var isIE = navigator.userAgent.toLowerCase().indexOf('msie') === -1;
+        console.log(navigator.userAgent.toLowerCase());
+        var isIE = navigator.userAgent.toLowerCase().indexOf('msie') > -1;
         console.log(isIE);
         console.log(navigator.userAgent.toLowerCase().indexOf('msie'));
         var isJSONSupported = typeof JSON !== "undefined" && !isIE;
