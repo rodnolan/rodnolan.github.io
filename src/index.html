@@ -83,9 +83,10 @@
 
       /**
        * asynchronously fetches the translations file from the url provided
+       * only works in modern browsers
        *
        * @returns object containing translated key/value pairs
-       */
+       *
       async function fetchTranslations(url) {
         try {
           const response = await fetch(url);
@@ -100,6 +101,30 @@
         } catch (error) {
           console.error(error.message);
         }
+      }
+      */
+
+      function fetchTranslations(url, errorHandler, resultHandler) {
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", url);
+        xhr.responseType = "json";
+        xhr.send();
+        xhr.onload = function () {
+          resultHandler(xhr.response);
+        };
+
+        xhr.onerror = function (e) {
+          errorHandler(e);
+        };
+
+        xhr.onprogress = function (event) {
+          // triggers periodically
+          // event.loaded - how many bytes downloaded
+          // event.lengthComputable = true if the server sent Content-Length header
+          // event.total - total number of bytes (if lengthComputable)
+          // alert(`Received ${event.loaded} of ${event.total}`);
+          console.log(`Received ${event.loaded} of ${event.total}`);
+        };
       }
 
       /**
@@ -142,23 +167,34 @@
        * Retreives the translated string for the key provided
        * @returns string
        */
-      function translate(key) {
+      function translate(key, translations) {
         return translations[key] || key;
       }
 
       /**
        * displays the "old browser warning" markup and populates the elements from translations
        */
-      async function displayBrowserWarning() {
+      function displayBrowserWarning() {
         document.getElementById("warning-message").style.display = "block";
         document.getElementById("app").style.display = "none";
 
         let locale = getLocale("locale");
-        translations = await fetchTranslations("assets/i18n/" + locale + ".json");
+        console.log("locale", locale);
 
-        document.getElementById("unsupported-browser-title").innerText = translate("UNSUPPORTED_BROWSER");
-        document.getElementById("unsupported-browser-message").innerText = translate("UNSUPPORTED_BROWSER_TXT");
-        document.getElementById("unsupported-browser-install").innerText = translate("UNSUPPORTED_BROWSER_INSTALL");
+        fetchTranslations(
+          "assets/i18n/" + locale + ".json",
+          function (error) {
+            console.log(error);
+          },
+          function (response) {
+            document.getElementById("unsupported-browser-title").innerText =
+              translate("UNSUPPORTED_BROWSER", response);
+            document.getElementById("unsupported-browser-message").innerText =
+              translate("UNSUPPORTED_BROWSER_TXT", response);
+            document.getElementById("unsupported-browser-install").innerText =
+              translate("UNSUPPORTED_BROWSER_INSTALL", response);
+          }
+        );
       }
 
       /**
@@ -169,11 +205,11 @@
         // return document.querySelector("app-root[ng-version]") === undefined;
 
         return (
-          typeof Promise === 'undefined' ||
-          typeof Map === 'undefined' ||
-          typeof Set === 'undefined' ||
-          typeof Object.assign === 'undefined' ||
-          typeof Symbol === 'undefined'
+          typeof Promise === "undefined" ||
+          typeof Map === "undefined" ||
+          typeof Set === "undefined" ||
+          typeof Object.assign === "undefined" ||
+          typeof Symbol === "undefined"
         );
       }
 
