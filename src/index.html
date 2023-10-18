@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>WARNING</title>
+    <title>BROWSER CHECK</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
@@ -22,7 +22,6 @@
         <p id="unsupported-browser-message"></p>
         <p id="unsupported-browser-install"></p>
         <hr />
-
         <div class="row my-4">
           <div class="col">
             <button
@@ -51,12 +50,9 @@
             </button>
           </div>
         </div>
-
         <a href="start.html">go to the angular app anyway</a>
       </div>
     </div>
-
-
 
     <script>
       /**
@@ -67,30 +63,15 @@
       }
 
       /**
-       * asynchronously fetches the translations file from the url provided
-       * only works in modern browsers
+       * uses XMLHttpRequest to retrieve the translations file from the url provided
+       * data via the resultHandler callback parameter
        *
-       * @returns object containing translated key/value pairs
+       * @returns undefined; json data containing translated key/value pairs is
+       * passed to the resultHandler callback function
        *
-      async function fetchTranslations(url) {
-        try {
-          const response = await fetch(url);
-          const responseAsJSON = response.ok ? await response.json() : null;
-          const translations = responseAsJSON && responseAsJSON;
-
-          if (translations) {
-            return translations;
-          } else {
-            throw new Error("translations could not be fetched");
-          }
-        } catch (error) {
-          console.error(error.message);
-        }
-      }
-      */
-
+       */
       function fetchTranslations(url, errorHandler, resultHandler) {
-        let xhr = new XMLHttpRequest();
+        var xhr = new XMLHttpRequest();
         xhr.open("GET", url);
         xhr.responseType = "json";
         xhr.setRequestHeader("Content-Type", "application/json");
@@ -115,15 +96,16 @@
       }
 
       /**
-       * validates the format of the locale string
+       * validates the locale string
        * all translation file names follow the convention: xx-XX.json
-       * so the locale string must match the `xx-XX` format
+       * so the locale string must match the `xx-XX` format and it
+       * must be one of the locales we support
        *
        * @returns boolean
        */
       function isValidLocale(str) {
         var validLocales = ['en-US', 'es-MX', 'fr-CA'];
-        var idx = validLocales.findIndex(function (element) { return element == str; });
+        var idx = validLocales.findIndex(function (element) { return element.toLowerCase() == str.toLowerCase(); });
         return idx > -1;
       }
 
@@ -135,11 +117,11 @@
        * @returns string
        */
       function getLocale(cookieName) {
-        const searchFor = cookieName + "=";
-        const cookies = document.cookie;
-        const cookiesArr = document.cookie.split(";");
-        for (let i = 0; i < cookiesArr.length; i++) {
-          let cookie = cookiesArr[i];
+        var searchFor = cookieName + "=";
+        var cookies = document.cookie;
+        var cookiesArr = document.cookie.split(";");
+        for (var i = 0; i < cookiesArr.length; i++) {
+          var cookie = cookiesArr[i];
           // strip out any/all leading spaces
           while (cookie.charAt(0) == " ") {
             cookie = cookie.substring(1);
@@ -148,9 +130,10 @@
             return cookie.substring(searchFor.length, cookie.length);
           }
         }
-        const navLang = navigator.language;
+        var navLang = navigator.language;
         // this could potentially be a 2-letter code
         // or a locale code that we don't support so...
+
         return isValidLocale(navLang) ? navLang : "en-US";
       }
 
@@ -166,25 +149,23 @@
        * displays the "old browser warning" markup and populates the elements from translations
        */
       function displayBrowserWarning() {
-        let locale = getLocale("locale");
-        console.log("locale", locale);
+        var locale = getLocale("locale");
+        var url = "assets/i18n/" + locale + ".json";
+        var errorHandler = function (error) {
+          console.log(error);
+        };
+        var resultHandler = function (translationsJSON) {
+          document.getElementById("unsupported-browser-title").innerText =
+            translate("UNSUPPORTED_BROWSER", translationsJSON);
+          document.getElementById("unsupported-browser-message").innerText =
+            translate("UNSUPPORTED_BROWSER_TXT", translationsJSON);
+          document.getElementById("unsupported-browser-install").innerText =
+            translate("UNSUPPORTED_BROWSER_INSTALL", translationsJSON);
 
-        fetchTranslations(
-          "assets/i18n/" + locale + ".json",
-          function (error) {
-            console.log(error);
-          },
-          function (translationsJSON) {
-            document.getElementById("unsupported-browser-title").innerText =
-              translate("UNSUPPORTED_BROWSER", translationsJSON);
-            document.getElementById("unsupported-browser-message").innerText =
-              translate("UNSUPPORTED_BROWSER_TXT", translationsJSON);
-            document.getElementById("unsupported-browser-install").innerText =
-              translate("UNSUPPORTED_BROWSER_INSTALL", translationsJSON);
+          document.getElementById("warning-message").style.display = "block";
+        };
 
-            document.getElementById("warning-message").style.display = "block";
-          }
-        );
+        fetchTranslations(url, errorHandler, resultHandler);
       }
 
       /**
@@ -193,7 +174,6 @@
        */
       function angularNotSupportedInThisBrowser() {
         // return document.querySelector("app-root[ng-version]") === undefined;
-
         return (
           typeof Promise === "undefined" ||
           typeof Map === "undefined" ||
@@ -211,17 +191,28 @@
       function handleOldBrowsers() {
         setTimeout(function () {
           if (angularNotSupportedInThisBrowser()) {
-            displayBrowserWarning();
-          } else {
+
             var proceed = confirm("your browser is old... go to angular app anyway?");
             if (proceed) {
-              // OK
+              // OK --- just to see what happens to old browsers that try to load an Angular 16 app
               window.location.href = "start.html";
             } else {
-              // CANCEL
+              // CANCEL --- display the warning
               displayBrowserWarning();
             }
+
+          } else {
+
+            var proceed = confirm('your browser is modern... test translations anyway?');
+            if (proceed) {
+              // OK --- just to test the old-style javascript in a modern browser
+              displayBrowserWarning();
+            } else {
+              // CANCEL --- go to the Angular 16 app in your modern browser
+              window.location.href = "start.html";
+            }
           }
+
         });
       }
       document.addEventListener("DOMContentLoaded", handleOldBrowsers);
