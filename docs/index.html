@@ -16,11 +16,11 @@
   <body>
     <div id="warning-message" style="display: none">
       <div class="modal-header">
-        <h4 class="modal-title" id="unsupported-browser-title"></h4>
+        <h4 class="modal-title" id="unsupported-browser-title">This Browser Is No Longer Supported</h4>
       </div>
       <div class="modal-body">
-        <p id="unsupported-browser-message"></p>
-        <p id="unsupported-browser-install"></p>
+        <p id="unsupported-browser-message">The browser version you are currently using is very old and it may not have the latest security updates. This application will stop supporting this browser soon. Continuing to use this browser will prevent you from accessing this application in the future.</p>
+        <p id="unsupported-browser-install">Please install and use the latest version of one of the following browsers:</p>
         <hr />
         <div class="row my-4">
           <div class="col">
@@ -152,28 +152,39 @@
       }
 
       /**
+       * Inserts the text provided into the element with the id provided
+       */
+      function inject(text, id) {
+        document.getElementById(id).innerText = text;
+      }
+
+      /**
        * displays the "old browser warning" markup and populates the elements from translations
        */
-      function displayBrowserWarning() {
-        var locale = getLocale("locale");
-        var url = "assets/i18n/" + locale + ".json";
-        var errorHandler = function (error) {
-          console.log(error);
-        };
-        var resultHandler = function (translationsJSON) {
-          console.log(translationsJSON);
-          console.log(translationsJSON instanceof JSON);
-          document.getElementById("unsupported-browser-title").innerText =
-            translate("UNSUPPORTED_BROWSER", translationsJSON);
-          document.getElementById("unsupported-browser-message").innerText =
-            translate("UNSUPPORTED_BROWSER_TXT", translationsJSON);
-          document.getElementById("unsupported-browser-install").innerText =
-            translate("UNSUPPORTED_BROWSER_INSTALL", translationsJSON);
+      function displayBrowserWarning(isJSONSupported) {
+        if (isJSONSupported) {
+          // display the translated text
+          var locale = getLocale("locale");
+          var url = "assets/i18n/" + locale + ".json";
+          var errorHandler = function (error) {
+            console.log(error);
+          };
+          var resultHandler = function (translationsJSON) {
+            var title = translate("UNSUPPORTED_BROWSER", translationsJSON);
+            var message = translate("UNSUPPORTED_BROWSER_TXT", translationsJSON);
+            var install = translate("UNSUPPORTED_BROWSER_INSTALL", translationsJSON);
 
+            inject(title, "unsupported-browser-title");
+            inject(message, "unsupported-browser-message");
+            inject(install, "unsupported-browser-install");
+            document.getElementById("warning-message").style.display = "block";
+          };
+
+          fetchTranslations(url, errorHandler, resultHandler);
+        } else {
+          // rely on English-only version
           document.getElementById("warning-message").style.display = "block";
-        };
-
-        fetchTranslations(url, errorHandler, resultHandler);
+        }
       }
 
       /**
@@ -187,7 +198,8 @@
           typeof Map === "undefined" ||
           typeof Set === "undefined" ||
           typeof Object.assign === "undefined" ||
-          typeof Symbol === "undefined"
+          typeof Symbol === "undefined" ||
+          typeof JSON === "undefined"
         );
       }
 
@@ -197,6 +209,7 @@
        * redirects to the angular app for modern browsers
        */
       function handleOldBrowsers() {
+        var isJSONSupported = typeof JSON !== "undefined";
         setTimeout(function () {
           if (angularNotSupportedInThisBrowser()) {
             var proceed = confirm(
@@ -207,7 +220,7 @@
               window.location.href = "start.html";
             } else {
               // CANCEL --- display the warning
-              displayBrowserWarning();
+              displayBrowserWarning(isJSONSupported);
             }
           } else {
             var proceed = confirm(
@@ -215,7 +228,7 @@
             );
             if (proceed) {
               // OK --- just to test the old-style javascript in a modern browser
-              displayBrowserWarning();
+              displayBrowserWarning(isJSONSupported);
             } else {
               // CANCEL --- go to the Angular 16 app in your modern browser
               window.location.href = "start.html";
