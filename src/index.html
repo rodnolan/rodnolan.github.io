@@ -90,7 +90,7 @@
           // event.loaded - how many bytes downloaded
           // event.lengthComputable = true if the server sent Content-Length header
           // event.total - total number of bytes (if lengthComputable)
-          console.log('Received ' + event.loaded + ' of ' + event.total);
+          console.log("Received " + event.loaded + " of " + event.total);
         };
       }
 
@@ -103,8 +103,15 @@
        * @returns boolean
        */
       function isValidLocale(str) {
-        var validLocales = ['en-US', 'es-MX', 'fr-CA'];
-        var idx = validLocales.findIndex(function (element) { return element.toLowerCase() == str.toLowerCase(); });
+        var validLocales = ["en-US", "es-MX", "fr-CA"];
+        var idx = -1;
+
+        for (var i = 0; i < validLocales.length; ++i) {
+          if (validLocales[i].toLowerCase() == str.toLowerCase()) {
+            idx = i;
+            break;
+          }
+        }
         return idx > -1;
       }
 
@@ -190,8 +197,9 @@
       function handleOldBrowsers() {
         setTimeout(function () {
           if (angularNotSupportedInThisBrowser()) {
-
-            var proceed = confirm("your browser is old... go to angular app anyway?");
+            var proceed = confirm(
+              "your browser is old... go to angular app anyway?"
+            );
             if (proceed) {
               // OK --- just to see what happens to old browsers that try to load an Angular 16 app
               window.location.href = "start.html";
@@ -199,10 +207,10 @@
               // CANCEL --- display the warning
               displayBrowserWarning();
             }
-
           } else {
-
-            var proceed = confirm('your browser is modern... test translations anyway?');
+            var proceed = confirm(
+              "your browser is modern... test translations anyway?"
+            );
             if (proceed) {
               // OK --- just to test the old-style javascript in a modern browser
               displayBrowserWarning();
@@ -211,7 +219,6 @@
               window.location.href = "start.html";
             }
           }
-
         });
       }
       document.addEventListener("DOMContentLoaded", handleOldBrowsers);
