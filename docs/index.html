@@ -16,11 +16,11 @@
   <body>
     <div id="warning-message" style="display: none">
       <div class="modal-header">
-        <h4 class="modal-title" id="unsupported-browser-title">This Browser Is No Longer Supported</h4>
+        <h4 class="modal-title" id="unsupported-browser-title">This Browser Is No Longer Supported!!!</h4>
       </div>
       <div class="modal-body">
-        <p id="unsupported-browser-message">The browser version you are currently using is very old and it may not have the latest security updates. This application will stop supporting this browser soon. Continuing to use this browser will prevent you from accessing this application in the future.</p>
-        <p id="unsupported-browser-install">Please install and use the latest version of one of the following browsers:</p>
+        <p id="unsupported-browser-message">The browser version you are using is too old to run this application.</p>
+        <p id="unsupported-browser-install">To continue using this application, you must install and use the latest version of one of the following browsers:</p>
         <hr />
         <div class="row my-4">
           <div class="col">
@@ -47,6 +47,19 @@
                 alt="download Microsoft Edge"
               />
               <span style="white-space: nowrap">Microsoft Edge</span>
+            </button>
+          </div>
+          <div class="col">
+            <button
+              class="btn btn-block btn-light"
+              onclick="openLink('https://support.apple.com/en-us/HT204416')"
+            >
+              <img
+                src="assets/images/safari.png"
+                height="60px"
+                alt="download Safari"
+              />
+              <span style="white-space: nowrap">Safari</span>
             </button>
           </div>
         </div>
@@ -159,7 +172,8 @@
       }
 
       /**
-       * displays the "old browser warning" markup and populates the elements from translations
+       * displays the "old browser warning" markup
+       * and populates the elements from translations if JSON is supported
        */
       function displayBrowserWarning(isJSONSupported) {
         if (isJSONSupported) {
