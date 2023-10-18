@@ -90,15 +90,14 @@
           // event.loaded - how many bytes downloaded
           // event.lengthComputable = true if the server sent Content-Length header
           // event.total - total number of bytes (if lengthComputable)
-          // alert(`Received ${event.loaded} of ${event.total}`);
-          console.log(`Received ${event.loaded} of ${event.total}`);
+          console.log('Received ' + event.loaded + ' of ' + event.total);
         };
       }
 
       /**
        * validates the locale string
        * all translation file names follow the convention: xx-XX.json
-       * so the locale string must match the `xx-XX` format and it
+       * so the locale string must match the 'xx-XX' format and it
        * must be one of the locales we support
        *
        * @returns boolean
