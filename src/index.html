@@ -228,7 +228,7 @@
        * redirects to the angular app for modern browsers
        */
       function handleOldBrowsers() {
-        var isJSONSupported = typeof JSON !== "undefined";
+        var isJSONSupported = typeof JSON !== "undefined" || !(navigator.userAgent.toLowerCase().indexOf('msie') > -1);
         console.log('isJSONSupported: ' + isJSONSupported);
         setTimeout(function () {
           if (angularNotSupportedInThisBrowser()) {
