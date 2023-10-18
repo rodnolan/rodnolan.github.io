@@ -13,7 +13,7 @@
       crossorigin="anonymous"
     />
   </head>
-  <body onload="handleOldBrowsers()">
+  <body>
     <div id="warning-message" style="display: none">
       <div class="modal-header">
         <h4 class="modal-title" id="unsupported-browser-title"></h4>
@@ -55,9 +55,9 @@
         <a href="start.html">go here</a>
       </div>
     </div>
-    <div id="app">
-      <app-root></app-root>
-      <!--
+    <!-- <div id="app"> -->
+    <!-- <app-root></app-root> -->
+    <!--
         This approach was inspired by https://stackoverflow.com/questions/46116284/angular-2-how-to-show-warning-page-if-browser-is-unsupported
         Ultimately, I don't care about which specific browser you're using. I only want to know if the angular app will work or not.
 
@@ -72,7 +72,7 @@
         Trying to interpret the user agent string reported by the browser is not recommended. See:
         https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
       -->
-    </div>
+    <!-- </div> -->
     <script>
       /**
        * Opens a URL in a new window
@@ -82,33 +82,34 @@
       }
 
       /**
-       * asynchronously fetches the translations file from the url provided
-       * only works in modern browsers
-       *
-       * @returns object containing translated key/value pairs
-       *
-      async function fetchTranslations(url) {
-        try {
-          const response = await fetch(url);
-          const responseAsJSON = response.ok ? await response.json() : null;
-          const translations = responseAsJSON && responseAsJSON;
+ * asynchronously fetches the translations file from the url provided
+ * only works in modern browsers
+ *
+ * @returns object containing translated key/value pairs
+ *
+async function fetchTranslations(url) {
+  try {
+    const response = await fetch(url);
+    const responseAsJSON = response.ok ? await response.json() : null;
+    const translations = responseAsJSON && responseAsJSON;
 
-          if (translations) {
-            return translations;
-          } else {
-            throw new Error("translations could not be fetched");
-          }
-        } catch (error) {
-          console.error(error.message);
-        }
-      }
-      */
+    if (translations) {
+      return translations;
+    } else {
+      throw new Error("translations could not be fetched");
+    }
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+*/
 
       function fetchTranslations(url, errorHandler, resultHandler) {
         let xhr = new XMLHttpRequest();
         xhr.open("GET", url);
         xhr.responseType = "json";
         xhr.send();
+
         xhr.onload = function () {
           resultHandler(xhr.response);
         };
@@ -227,6 +228,7 @@
           }
         });
       }
+      document.addEventListener("DOMContentLoaded", handleOldBrowsers);
     </script>
   </body>
 </html>
