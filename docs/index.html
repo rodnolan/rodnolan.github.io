@@ -115,13 +115,18 @@
        *
        * @returns boolean
        */
-      function isValidLocale(str) {
+      function isValidLocale(locale) {
         var validLocales = ["en-US", "es-MX", "fr-CA"];
         var idx = -1;
 
         for (var i = 0; i < validLocales.length; ++i) {
-          if (validLocales[i].toLowerCase() == str.toLowerCase()) {
-            idx = i;
+          try {
+            var foundMatch = validLocales[i].toLowerCase() === locale.toLowerCase();
+            if (foundMatch) {
+              idx = i;
+              break;
+            }
+          } catch (e) {
             break;
           }
         }
@@ -224,6 +229,7 @@
        */
       function handleOldBrowsers() {
         var isJSONSupported = typeof JSON !== "undefined";
+        console.log('isJSONSupported: ' + isJSONSupported);
         setTimeout(function () {
           if (angularNotSupportedInThisBrowser()) {
             var proceed = confirm(
