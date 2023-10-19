@@ -16,11 +16,11 @@
   <body>
     <div id="warning-message" style="display: none">
       <div class="modal-header">
-        <h4 class="modal-title" id="unsupported-browser-title">This Browser Is No Longer Supported!!!</h4>
+        <h4 class="modal-title" id="unsupported-browser-title">DEFAULT ENGLISH This Browser Is No Longer Supported!!!</h4>
       </div>
       <div class="modal-body">
-        <p id="unsupported-browser-message">The browser version you are using is too old to run this application.</p>
-        <p id="unsupported-browser-install">To continue using this application, you must install and use the latest version of one of the following browsers:</p>
+        <p id="unsupported-browser-message">DEFAULT ENGLISH The browser version you are using is too old to run this application.</p>
+        <p id="unsupported-browser-install">DEFAULT ENGLISH To continue using this application, you must install and use the latest version of one of the following browsers:</p>
         <hr />
         <div class="row my-4">
           <div class="col">
@@ -86,12 +86,12 @@
       function fetchTranslations(url, errorHandler, resultHandler) {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", url);
-        xhr.responseType = "json";
+        xhr.responseType = "text";
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send();
 
         xhr.onload = function () {
-          resultHandler(xhr.response);
+          resultHandler(JSON.parse(xhr.responseText));
         };
 
         xhr.onerror = function (e) {
@@ -181,7 +181,7 @@
        * and populates the elements from translations if JSON is supported
        */
       function displayBrowserWarning(isJSONSupported) {
-        if (isJSONSupported) {
+        // if (isJSONSupported) {
           // display the translated text
           var locale = getLocale("locale");
           var url = "assets/i18n/" + locale + ".json";
@@ -200,10 +200,10 @@
           };
 
           fetchTranslations(url, errorHandler, resultHandler);
-        } else {
+        // } else {
           // rely on English-only version
           document.getElementById("warning-message").style.display = "block";
-        }
+        // }
       }
 
       /**
@@ -228,12 +228,11 @@
        * redirects to the angular app for modern browsers
        */
       function handleOldBrowsers() {
-        console.log(navigator.userAgent.toLowerCase());
-        var isIE = navigator.userAgent.toLowerCase().indexOf('msie') > -1 || navigator.userAgent.toLowerCase().indexOf('trident') > -1;
-        console.log(isIE);
-        console.log(navigator.userAgent.toLowerCase().indexOf('msie'));
-        var isJSONSupported = typeof JSON !== "undefined" && !isIE;
-        console.log('isJSONSupported: ' + isJSONSupported);
+        // console.log(navigator.userAgent.toLowerCase());
+        // var isIE = navigator.userAgent.toLowerCase().indexOf('msie') > -1 || navigator.userAgent.toLowerCase().indexOf('trident') > -1;
+        // console.log(isIE);
+        // var isJSONSupported = typeof JSON !== "undefined" && !isIE;
+        // console.log('isJSONSupported: ' + isJSONSupported);
         setTimeout(function () {
           if (angularNotSupportedInThisBrowser()) {
             var proceed = confirm(
@@ -244,7 +243,8 @@
               window.location.href = "start.html";
             } else {
               // CANCEL --- display the warning
-              displayBrowserWarning(isJSONSupported);
+              // displayBrowserWarning(isJSONSupported);
+              displayBrowserWarning();
             }
           } else {
             var proceed = confirm(
@@ -252,7 +252,8 @@
             );
             if (proceed) {
               // OK --- just to test the old-style javascript in a modern browser
-              displayBrowserWarning(isJSONSupported);
+              // displayBrowserWarning(isJSONSupported);
+              displayBrowserWarning();
             } else {
               // CANCEL --- go to the Angular 16 app in your modern browser
               window.location.href = "start.html";
