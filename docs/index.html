@@ -239,6 +239,7 @@
       function logBrowserVersion() {
         // Get the user agent string
         var userAgent = navigator.userAgent;
+        console.log(userAgent);
         console.log(userAgent.toLowerCase());
 
         // Check for specific browser names and versions using older syntax
@@ -248,6 +249,13 @@
           if (versionMatch) {
               var version = versionMatch[2];
               console.log("Internet Explorer version: " + version);
+          }
+        } else if (userAgent.indexOf("Edg") !== -1 || userAgent.indexOf("Edge") !== -1) {
+          // Microsoft Edge-specific code
+          var versionMatch = userAgent.match(/Edg\/([\d\.]+)/);
+          if (versionMatch) {
+            var version = versionMatch[1];
+            console.log("Edge version: " + version);
           }
         } else if (userAgent.indexOf("Chrome") !== -1) {
           // Chrome-specific code
@@ -262,13 +270,6 @@
           if (versionMatch) {
             var version = versionMatch[1];
             console.log("Firefox version: " + version);
-          }
-        } else if (userAgent.indexOf("Edge") !== -1) {
-          // Microsoft Edge-specific code
-          var versionMatch = userAgent.match(/Edg\/([\d\.]+)/);
-          if (versionMatch) {
-            var version = versionMatch[1];
-            console.log("Edge version: " + version);
           }
         } else if (
           userAgent.indexOf("Safari") !== -1 &&
