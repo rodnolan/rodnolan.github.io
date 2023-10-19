@@ -16,11 +16,19 @@
   <body>
     <div id="warning-message" style="display: none">
       <div class="modal-header">
-        <h4 class="modal-title" id="unsupported-browser-title">DEFAULT ENGLISH This Browser Is No Longer Supported!!!</h4>
+        <h4 class="modal-title" id="unsupported-browser-title">
+          DEFAULT ENGLISH This Browser Is No Longer Supported!!!
+        </h4>
       </div>
       <div class="modal-body">
-        <p id="unsupported-browser-message">DEFAULT ENGLISH The browser version you are using is too old to run this application.</p>
-        <p id="unsupported-browser-install">DEFAULT ENGLISH To continue using this application, you must install and use the latest version of one of the following browsers:</p>
+        <p id="unsupported-browser-message">
+          DEFAULT ENGLISH The browser version you are using is too old to run
+          this application.
+        </p>
+        <p id="unsupported-browser-install">
+          DEFAULT ENGLISH To continue using this application, you must install
+          and use the latest version of one of the following browsers:
+        </p>
         <hr />
         <div class="row my-4">
           <div class="col">
@@ -121,7 +129,8 @@
 
         for (var i = 0; i < validLocales.length; ++i) {
           try {
-            var foundMatch = validLocales[i].toLowerCase() === locale.toLowerCase();
+            var foundMatch =
+              validLocales[i].toLowerCase() === locale.toLowerCase();
             if (foundMatch) {
               idx = i;
               break;
@@ -182,36 +191,38 @@
        */
       function displayBrowserWarning(isJSONSupported) {
         // if (isJSONSupported) {
-          // display the translated text
-          var locale = getLocale("locale");
-          var url = "assets/i18n/" + locale + ".json";
-          var errorHandler = function (error) {
-            console.log(error);
-          };
-          var resultHandler = function (translationsJSON) {
-            var title = translate("UNSUPPORTED_BROWSER", translationsJSON);
-            var message = translate("UNSUPPORTED_BROWSER_TXT", translationsJSON);
-            var install = translate("UNSUPPORTED_BROWSER_INSTALL", translationsJSON);
+        // display the translated text
+        var locale = getLocale("locale");
+        var url = "assets/i18n/" + locale + ".json";
+        var errorHandler = function (error) {
+          console.log(error);
+        };
+        var resultHandler = function (translationsJSON) {
+          var title = translate("UNSUPPORTED_BROWSER", translationsJSON);
+          var message = translate("UNSUPPORTED_BROWSER_TXT", translationsJSON);
+          var install = translate(
+            "UNSUPPORTED_BROWSER_INSTALL",
+            translationsJSON
+          );
 
-            inject(title, "unsupported-browser-title");
-            inject(message, "unsupported-browser-message");
-            inject(install, "unsupported-browser-install");
-            document.getElementById("warning-message").style.display = "block";
-          };
-
-          fetchTranslations(url, errorHandler, resultHandler);
-        // } else {
-          // rely on English-only version
+          inject(title, "unsupported-browser-title");
+          inject(message, "unsupported-browser-message");
+          inject(install, "unsupported-browser-install");
           document.getElementById("warning-message").style.display = "block";
+        };
+
+        fetchTranslations(url, errorHandler, resultHandler);
+        // } else {
+        // rely on English-only version
+        document.getElementById("warning-message").style.display = "block";
         // }
       }
 
       /**
-       * determines if the Angular app was properly bootstrapped in this browser
+       * determines if an Angular app should work in this browser
        * @returns boolean
        */
-      function angularNotSupportedInThisBrowser() {
-        // return document.querySelector("app-root[ng-version]") === undefined;
+      function angularIsNotSupportedInThisBrowser() {
         return (
           typeof Promise === "undefined" ||
           typeof Map === "undefined" ||
@@ -223,18 +234,74 @@
       }
 
       /**
+       * logs the details of the browser and version to the console
+       */
+      function logBrowserVersion() {
+        // Get the user agent string
+        var userAgent = navigator.userAgent;
+        console.log(userAgent.toLowerCase());
+
+        // Check for specific browser names and versions using older syntax
+        if (userAgent.indexOf("MSIE") !== -1 || userAgent.indexOf("Trident") !== -1) {
+          // Internet Explorer-specific code
+          var versionMatch = userAgent.match(/(MSIE|rv:|rv\:)([\d\.]+)/);
+          if (versionMatch) {
+              var version = versionMatch[2];
+              console.log("Internet Explorer version: " + version);
+          }
+        } else if (userAgent.indexOf("Chrome") !== -1) {
+          // Chrome-specific code
+          var versionMatch = userAgent.match(/Chrome\/([\d\.]+)/);
+          if (versionMatch) {
+            var version = versionMatch[1];
+            console.log("Chrome version: " + version);
+          }
+        } else if (userAgent.indexOf("Firefox") !== -1) {
+          // Firefox-specific code
+          var versionMatch = userAgent.match(/Firefox\/([\d\.]+)/);
+          if (versionMatch) {
+            var version = versionMatch[1];
+            console.log("Firefox version: " + version);
+          }
+        } else if (userAgent.indexOf("Edge") !== -1) {
+          // Microsoft Edge-specific code
+          var versionMatch = userAgent.match(/Edg\/([\d\.]+)/);
+          if (versionMatch) {
+            var version = versionMatch[1];
+            console.log("Edge version: " + version);
+          }
+        } else if (
+          userAgent.indexOf("Safari") !== -1 &&
+          userAgent.indexOf("Version") !== -1
+        ) {
+          // Safari-specific code
+          var versionMatch = userAgent.match(/Version\/([\d\.]+)/);
+          if (versionMatch) {
+            var version = versionMatch[1];
+            console.log("Safari version: " + version);
+          }
+        } else {
+          // Handle other browsers
+          console.log("Browser not recognized");
+        }
+      }
+
+      /**
        * called from body.onLoad to check browser features
        * displays the warning for unsupported browsers
        * redirects to the angular app for modern browsers
        */
       function handleOldBrowsers() {
-        // console.log(navigator.userAgent.toLowerCase());
+        logBrowserVersion();
+
         // var isIE = navigator.userAgent.toLowerCase().indexOf('msie') > -1 || navigator.userAgent.toLowerCase().indexOf('trident') > -1;
         // console.log(isIE);
         // var isJSONSupported = typeof JSON !== "undefined" && !isIE;
         // console.log('isJSONSupported: ' + isJSONSupported);
+
+        /*
         setTimeout(function () {
-          if (angularNotSupportedInThisBrowser()) {
+          if (angularIsNotSupportedInThisBrowser()) {
             var proceed = confirm(
               "your browser is old... go to angular app anyway?"
             );
@@ -260,10 +327,9 @@
             }
           }
         });
+        */
       }
       document.addEventListener("DOMContentLoaded", handleOldBrowsers);
     </script>
-
-    <!-- <script src="./index.js" type="text/javascript"></script> -->
   </body>
 </html>
