@@ -14,6 +14,7 @@
     />
   </head>
   <body>
+    <p id="ua" style="font-size: larger; padding: 2rem;"></p>
     <div id="warning-message" style="display: none">
       <div class="modal-header">
         <h4 class="modal-title" id="unsupported-browser-title">
@@ -109,6 +110,8 @@
         xhr.send();
 
         xhr.onload = function () {
+          console.log('xhr.responseText' + xhr.responseText);
+
           resultHandler(JSON.parse(xhr.responseText));
         };
 
@@ -208,6 +211,7 @@
       function displayBrowserWarning() {
         var locale = getLocale("locale");
         var url = "assets/i18n/" + locale + ".json";
+        // could the issue be something to
         var errorHandler = function (error) {
           console.log(error);
         };
@@ -334,16 +338,21 @@
       }
 
       /**
+       * display the userAgent string to simplify data collection during testing
+       */
+       function showUserAgent() {
+        document.getElementById("ua").innerText = navigator.userAgent;
+       }
+
+       /**
        * evaluates browser version and available features
        * displays the warning for unsupported browsers
        * redirects to the angular app for modern browsers
        */
       function checkBrowser() {
-        // getting a false positive on
-        // - Edge 84
-        // - Safari 13
-        // these should fail but they don't because
-        // they fail the version check but pass the feature checks
+
+        showUserAgent();
+
         var goodVersion = isKnownGoodBrowserVersion();
         var goodFeatures = hasRequiredFeatures();
         console.log("Version check: ", goodVersion);
@@ -351,6 +360,10 @@
         // this adjustment should solve that
         var isAngularCapable = (goodVersion == true) || (goodVersion == undefined && goodFeatures);
 
+        // safari 14 fails trying to load the translations from https://rodnolan.github.io/assets/i18n/en-us.json
+        // this only happens on SL, not on a real mac
+        // the SL vagrant machine is probably case sensitive and the file uses UPPERCASE for the country code
+        // whereas the request is probably using the lowercase version of the whole string
 
         setTimeout(function () {
           if (isAngularCapable) {
