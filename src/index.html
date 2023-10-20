@@ -76,20 +76,30 @@
     </div>
 
     <script>
+
+      var minimumBrowserVersions = {
+        chrome: 85,
+        firefox: 90,
+        edge: 85,
+        safari: 14
+      }
+
       /**
        * Opens a URL in a new window
+       *
+       * @param url the url to open
        */
       function openLink(url) {
         window.open(url, "_blank");
       }
 
       /**
-       * uses XMLHttpRequest to retrieve the translations file from the url provided
-       * data via the resultHandler callback parameter
+       * uses XMLHttpRequest to retrieve the translations file
        *
-       * @returns undefined; json data containing translated key/value pairs is
-       * passed to the resultHandler callback function
-       *
+       * @param url the file to request
+       * @param errorHandler the function to call to handle request errors
+       * @param resultHandler the function to call to process the file
+       * @returns undefined; JSON data from the file is passed to the caller via the resultHandler callback function
        */
       function fetchTranslations(url, errorHandler, resultHandler) {
         var xhr = new XMLHttpRequest();
@@ -121,6 +131,7 @@
        * so the locale string must match the 'xx-XX' format and it
        * must be one of the locales we support
        *
+       * @param locale a string representing the user's locale
        * @returns boolean
        */
       function isValidLocale(locale) {
@@ -143,10 +154,9 @@
       }
 
       /**
-       * get the user's preferred locale from either
-       * 1) the cookie, or
-       * 2) the browser's language setting
+       * get the user's preferred locale from either a cookie or the browser's language setting
        *
+       * @param cookieName the name of the cookie that may contain the user's locale preference
        * @returns string
        */
       function getLocale(cookieName) {
@@ -172,6 +182,9 @@
 
       /**
        * Retreives the translated string for the key provided
+       *
+       * @param key the name of the property to read
+       * @param translations the object containing name/value pairs for all translations
        * @returns string
        */
       function translate(key, translations) {
@@ -180,6 +193,9 @@
 
       /**
        * Inserts the text provided into the element with the id provided
+       *
+       * @param text the text to display
+       * @param id the id of the element where the text should be displayed
        */
       function inject(text, id) {
         document.getElementById(id).innerText = text;
@@ -187,23 +203,18 @@
 
       /**
        * displays the "old browser warning" markup
-       * and populates the elements from translations if JSON is supported
+       * and populates the page with translated strings
        */
-      function displayBrowserWarning(isJSONSupported) {
-        // if (isJSONSupported) {
-        // display the translated text
+      function displayBrowserWarning() {
         var locale = getLocale("locale");
         var url = "assets/i18n/" + locale + ".json";
         var errorHandler = function (error) {
           console.log(error);
         };
-        var resultHandler = function (translationsJSON) {
-          var title = translate("UNSUPPORTED_BROWSER", translationsJSON);
-          var message = translate("UNSUPPORTED_BROWSER_TXT", translationsJSON);
-          var install = translate(
-            "UNSUPPORTED_BROWSER_INSTALL",
-            translationsJSON
-          );
+        var resultHandler = function (json) {
+          var title = translate("UNSUPPORTED_BROWSER", json);
+          var message = translate("UNSUPPORTED_BROWSER_TXT", json);
+          var install = translate("UNSUPPORTED_BROWSER_INSTALL", json);
 
           inject(title, "unsupported-browser-title");
           inject(message, "unsupported-browser-message");
@@ -212,124 +223,151 @@
         };
 
         fetchTranslations(url, errorHandler, resultHandler);
-        // } else {
-        // rely on English-only version
-        document.getElementById("warning-message").style.display = "block";
-        // }
       }
 
       /**
-       * determines if an Angular app should work in this browser
+       * estimates whether a modern Angular app should work in this browser
+       * based on the features this browser supports
        * @returns boolean
        */
-      function angularIsNotSupportedInThisBrowser() {
-        return (
-          typeof Promise === "undefined" ||
-          typeof Map === "undefined" ||
-          typeof Set === "undefined" ||
-          typeof Object.assign === "undefined" ||
-          typeof Symbol === "undefined" ||
-          typeof JSON === "undefined"
-        );
+      function hasRequiredFeatures() {
+        var hasPromise = typeof Promise !== "undefined";
+        var hasMap = typeof Map !== "undefined";
+        var hasSet = typeof Set !== "undefined";
+        var hasAssign = typeof Object.assign !== "undefined";
+        var hasSymbol = typeof Symbol !== "undefined";
+        var hasJSON = typeof JSON !== "undefined";
+
+        // console.log(typeof Promise);
+        // console.log(hasPromise);
+        // console.log(typeof Map);
+        // console.log(hasMap);
+        // console.log(typeof Set);
+        // console.log(hasSet);
+        // console.log(typeof Object.assign);
+        // console.log(hasAssign);
+        // console.log(typeof Symbol);
+        // console.log(hasSymbol);
+        // console.log(typeof JSON);
+        // console.log(hasJSON);
+
+        return (hasPromise && hasMap && hasSet && hasAssign && hasSymbol && hasJSON);
       }
 
       /**
-       * logs the details of the browser and version to the console
+       * extracts the first part of version string (representing the MAJOR version number)
+       * as an integer
+       *
+       * @param fullVersion a string in the format {Major Version Number}.{d}.{d}.{d}
+       * where {Major Version Number} and {d} are just numbers
+       *
+       * @returns number {Major Version Number}
        */
-      function logBrowserVersion() {
-        // Get the user agent string
+      function majorVersion(fullVersion) {
+        return parseInt(fullVersion.split(".")[0]);
+      }
+
+      /**
+       * inspects the userAgent string to determine whether the browser falls within a set of browsers
+       * that are known to work with Angular 16 applications
+       *
+       * A false result from this call does not necessarily mean the browser is NOT Angular 16 capable
+       *
+       * @returns boolean
+       */
+      function isKnownGoodBrowserVersion() {
         var userAgent = navigator.userAgent;
         console.log(userAgent);
-        console.log(userAgent.toLowerCase());
 
-        // Check for specific browser names and versions using older syntax
         if (userAgent.indexOf("MSIE") !== -1 || userAgent.indexOf("Trident") !== -1) {
-          // Internet Explorer-specific code
           var versionMatch = userAgent.match(/(MSIE|rv:|rv\:)([\d\.]+)/);
           if (versionMatch) {
               var version = versionMatch[2];
-              console.log("Internet Explorer version: " + version);
+              var mVer = majorVersion(version);
+              console.log("Internet Explorer version: " + mVer);
+              return false; // no version of IE is Angular 16 capable
           }
-        } else if (userAgent.indexOf("Edg") !== -1 || userAgent.indexOf("Edge") !== -1) {
-          // Microsoft Edge-specific code
+        } else if (userAgent.indexOf("Edg") !== -1) {
           var versionMatch = userAgent.match(/Edg\/([\d\.]+)/);
           if (versionMatch) {
             var version = versionMatch[1];
-            console.log("Edge version: " + version);
+            var mVer = majorVersion(version);
+            console.log("Edge version: " + mVer + " must be at least " + minimumBrowserVersions.edge);
+            var versionIsGood = mVer >= minimumBrowserVersions.edge;
+            return versionIsGood;
           }
         } else if (userAgent.indexOf("Chrome") !== -1) {
-          // Chrome-specific code
           var versionMatch = userAgent.match(/Chrome\/([\d\.]+)/);
           if (versionMatch) {
             var version = versionMatch[1];
-            console.log("Chrome version: " + version);
+            var mVer = majorVersion(version);
+            console.log("Chrome version: " + mVer + " must be at least " + minimumBrowserVersions.chrome);
+            var versionIsGood = mVer >= minimumBrowserVersions.chrome;
+            return versionIsGood;
           }
         } else if (userAgent.indexOf("Firefox") !== -1) {
-          // Firefox-specific code
           var versionMatch = userAgent.match(/Firefox\/([\d\.]+)/);
           if (versionMatch) {
             var version = versionMatch[1];
-            console.log("Firefox version: " + version);
+            var mVer = majorVersion(version);
+            console.log("Firefox version: " + mVer + " must be at least " + minimumBrowserVersions.firefox);
+            var versionIsGood = mVer >= minimumBrowserVersions.firefox;
+            return versionIsGood;
           }
         } else if (
           userAgent.indexOf("Safari") !== -1 &&
           userAgent.indexOf("Version") !== -1
         ) {
-          // Safari-specific code
           var versionMatch = userAgent.match(/Version\/([\d\.]+)/);
           if (versionMatch) {
             var version = versionMatch[1];
-            console.log("Safari version: " + version);
+            var mVer = majorVersion(version);
+            console.log("Safari version: " + mVer + " must be at least " + minimumBrowserVersions.safari);
+            var versionIsGood = mVer >= minimumBrowserVersions.safari;
+            return versionIsGood;
           }
         } else {
-          // Handle other browsers
           console.log("Browser not recognized");
+          // potentially excludes browsers that actually do work
+          return false;
         }
       }
 
       /**
-       * called from body.onLoad to check browser features
+       * evaluates browser version and available features
        * displays the warning for unsupported browsers
        * redirects to the angular app for modern browsers
        */
       function handleOldBrowsers() {
-        logBrowserVersion();
+        // getting a false positive on Edge 13... why?
+        var goodVersion = isKnownGoodBrowserVersion();
+        var goodFeatures = hasRequiredFeatures();
+        console.log("Version check: ", goodVersion);
+        console.log("Feature check: ", goodFeatures);
+        var isAngularCapable = goodVersion || goodFeatures;
 
-        // var isIE = navigator.userAgent.toLowerCase().indexOf('msie') > -1 || navigator.userAgent.toLowerCase().indexOf('trident') > -1;
-        // console.log(isIE);
-        // var isJSONSupported = typeof JSON !== "undefined" && !isIE;
-        // console.log('isJSONSupported: ' + isJSONSupported);
 
-        /*
         setTimeout(function () {
-          if (angularIsNotSupportedInThisBrowser()) {
-            var proceed = confirm(
-              "your browser is old... go to angular app anyway?"
-            );
-            if (proceed) {
-              // OK --- just to see what happens to old browsers that try to load an Angular 16 app
-              window.location.href = "start.html";
-            } else {
-              // CANCEL --- display the warning
-              // displayBrowserWarning(isJSONSupported);
+          if (isAngularCapable) {
+            // window.location.href = "start.html";
+            // temporarily enable testing both paths
+            if (confirm("browser is probably ok... try translations anyway?")) {
               displayBrowserWarning();
+            } else {
+              window.location.href = "start.html";
             }
           } else {
-            var proceed = confirm(
-              "your browser is modern... test translations anyway?"
-            );
-            if (proceed) {
-              // OK --- just to test the old-style javascript in a modern browser
-              // displayBrowserWarning(isJSONSupported);
-              displayBrowserWarning();
-            } else {
-              // CANCEL --- go to the Angular 16 app in your modern browser
+            // displayBrowserWarning();
+            // temporarily enable testing both paths
+            if (confirm("browser is probably not ok... try angular anyway?")) {
               window.location.href = "start.html";
+            } else {
+              displayBrowserWarning();
             }
           }
         });
-        */
       }
+
       document.addEventListener("DOMContentLoaded", handleOldBrowsers);
     </script>
   </body>
