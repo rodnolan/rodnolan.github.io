@@ -328,8 +328,8 @@
           }
         } else {
           console.log("Browser not recognized");
-          // potentially excludes browsers that actually do work
-          return false;
+          // sepcifies that we haven't checked so we don't really know one way or the other
+          return undefined;
         }
       }
 
@@ -338,13 +338,18 @@
        * displays the warning for unsupported browsers
        * redirects to the angular app for modern browsers
        */
-      function handleOldBrowsers() {
-        // getting a false positive on Edge 13... why?
+      function checkBrowser() {
+        // getting a false positive on
+        // - Edge 84
+        // - Safari 13
+        // these should fail but they don't because
+        // they fail the version check but pass the feature checks
         var goodVersion = isKnownGoodBrowserVersion();
         var goodFeatures = hasRequiredFeatures();
         console.log("Version check: ", goodVersion);
         console.log("Feature check: ", goodFeatures);
-        var isAngularCapable = goodVersion || goodFeatures;
+        // this adjustment should solve that
+        var isAngularCapable = (goodVersion == true) || (goodVersion == undefined && goodFeatures);
 
 
         setTimeout(function () {
@@ -368,7 +373,7 @@
         });
       }
 
-      document.addEventListener("DOMContentLoaded", handleOldBrowsers);
+      document.addEventListener("DOMContentLoaded", checkBrowser);
     </script>
   </body>
 </html>
