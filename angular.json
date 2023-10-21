@@ -23,7 +23,6 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/unsupported.html",
               "src/index.html"
             ],
             "styles": [
