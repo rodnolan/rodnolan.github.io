@@ -174,12 +174,12 @@
       }
 
       /**
-       * get the user's preferred locale from either a cookie or the browser's language setting
+       * retreive the value of the cookie named in the parameter
        *
-       * @param cookieName {string} the name of the cookie that may contain the user's locale preference
-       * @returns {string}
+       * @param cookieName {string} the name of the cookie to retrieve
+       * @returns {string | undefined}
        */
-      function getLocale(cookieName) {
+      function getCookieWithName(cookieName) {
         var searchFor = cookieName + "=";
         var cookies = document.cookie;
         var cookiesArr = document.cookie.split(";");
@@ -193,11 +193,26 @@
             return cookie.substring(searchFor.length, cookie.length);
           }
         }
-        var navLang = navigator.language;
-        // this could potentially be a 2-letter code
-        // or a locale code that we don't support so...
+        return undefined;
+      }
 
-        return isValidLocale(navLang) ? navLang : "en-US";
+      /**
+       * get the user's preferred locale from either a cookie or the browser's language setting
+       *
+       * @param cookieName {string} the name of the cookie that may contain the user's locale preference
+       * @returns {string}
+       */
+      function getLocale(cookieName) {
+        var cookieLocale = getCookieWithName(cookieName);
+        if (cookieLocale) {
+          return cookieLocale;
+        } else {
+          var navLang = navigator.language;
+          // this could potentially be a 2-letter code
+          // or a locale code that we don't support so...
+
+          return isValidLocale(navLang) ? navLang : "en-US";
+        }
       }
 
       /**

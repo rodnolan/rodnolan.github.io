@@ -82,13 +82,30 @@
         chrome: 85,
         firefox: 90,
         edge: 85,
-        safari: 14
+        safari: 14,
+      };
+
+      /**
+       * retrieves the value of the named query parameter
+       *
+       * @param key {string} the name of the query parameter to search for
+       * @returns {string | undefined} the value of the query parameter; undefined if the key does not exist
+       */
+      function getQueryStringValue(key) {
+        key = key.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + key + "=([^&#]*)");
+        var results = regex.exec(window.location.search);
+        if (results == null) {
+          return "";
+        } else {
+          return decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
       }
 
       /**
        * Opens a URL in a new window
        *
-       * @param url the url to open
+       * @param url {string} the url to open
        */
       function openLink(url) {
         window.open(url, "_blank");
@@ -97,10 +114,10 @@
       /**
        * uses XMLHttpRequest to retrieve the translations file
        *
-       * @param url the file to request
-       * @param errorHandler the function to call to handle request errors
-       * @param resultHandler the function to call to process the file
-       * @returns undefined; JSON data from the file is passed to the caller via the resultHandler callback function
+       * @param url {string} the file to request
+       * @param errorHandler {function} the function to call to handle request errors
+       * @param resultHandler {function} the function to call to process the file
+       * @returns {undefined} JSON data from the file is passed to the caller via the resultHandler callback function
        */
       function fetchTranslations(url, errorHandler, resultHandler) {
         var xhr = new XMLHttpRequest();
@@ -110,7 +127,7 @@
         xhr.send();
 
         xhr.onload = function () {
-          console.log('xhr.responseText' + xhr.responseText);
+          console.log("xhr.responseText" + xhr.responseText);
 
           resultHandler(JSON.parse(xhr.responseText));
         };
@@ -134,8 +151,8 @@
        * so the locale string must match the 'xx-XX' format and it
        * must be one of the locales we support
        *
-       * @param locale a string representing the user's locale
-       * @returns boolean
+       * @param locale {string} a five character string representing the user's locale
+       * @returns {boolean}
        */
       function isValidLocale(locale) {
         var validLocales = ["en-US", "es-MX", "fr-CA"];
@@ -157,12 +174,12 @@
       }
 
       /**
-       * get the user's preferred locale from either a cookie or the browser's language setting
+       * retreive the value of the cookie named in the parameter
        *
-       * @param cookieName the name of the cookie that may contain the user's locale preference
-       * @returns string
+       * @param cookieName {string} the name of the cookie to retrieve
+       * @returns {string | undefined}
        */
-      function getLocale(cookieName) {
+      function getCookieWithName(cookieName) {
         var searchFor = cookieName + "=";
         var cookies = document.cookie;
         var cookiesArr = document.cookie.split(";");
@@ -176,19 +193,34 @@
             return cookie.substring(searchFor.length, cookie.length);
           }
         }
-        var navLang = navigator.language;
-        // this could potentially be a 2-letter code
-        // or a locale code that we don't support so...
+        return undefined;
+      }
 
-        return isValidLocale(navLang) ? navLang : "en-US";
+      /**
+       * get the user's preferred locale from either a cookie or the browser's language setting
+       *
+       * @param cookieName {string} the name of the cookie that may contain the user's locale preference
+       * @returns {string}
+       */
+      function getLocale(cookieName) {
+        var cookieLocale = getCookieWithName(cookieName);
+        if (cookieLocale) {
+          return cookieLocale;
+        } else {
+          var navLang = navigator.language;
+          // this could potentially be a 2-letter code
+          // or a locale code that we don't support so...
+
+          return isValidLocale(navLang) ? navLang : "en-US";
+        }
       }
 
       /**
        * Retreives the translated string for the key provided
        *
-       * @param key the name of the property to read
-       * @param translations the object containing name/value pairs for all translations
-       * @returns string
+       * @param key {string} the name of the property to read
+       * @param translations {object} the object containing name/value pairs for all translations
+       * @returns {string}
        */
       function translate(key, translations) {
         return translations[key] || key;
@@ -197,8 +229,8 @@
       /**
        * Inserts the text provided into the element with the id provided
        *
-       * @param text the text to display
-       * @param id the id of the element where the text should be displayed
+       * @param text {string} the text to display
+       * @param id {string} the id of the element where the text should be displayed
        */
       function inject(text, id) {
         document.getElementById(id).innerText = text;
@@ -232,7 +264,7 @@
       /**
        * estimates whether a modern Angular app should work in this browser
        * based on the features this browser supports
-       * @returns boolean
+       * @returns {boolean}
        */
       function hasRequiredFeatures() {
         var hasPromise = typeof Promise !== "undefined";
@@ -255,17 +287,19 @@
         // console.log(typeof JSON);
         // console.log(hasJSON);
 
-        return (hasPromise && hasMap && hasSet && hasAssign && hasSymbol && hasJSON);
+        return (
+          hasPromise && hasMap && hasSet && hasAssign && hasSymbol && hasJSON
+        );
       }
 
       /**
        * extracts the first part of version string (representing the MAJOR version number)
        * as an integer
        *
-       * @param fullVersion a string in the format {Major Version Number}.{d}.{d}.{d}
+       * @param fullVersion {string} a string in the format {Major Version Number}.{d}.{d}.{d}
        * where {Major Version Number} and {d} are just numbers
        *
-       * @returns number {Major Version Number}
+       * @returns {number} a number representing the {Major Version Number}
        */
       function majorVersion(fullVersion) {
         return parseInt(fullVersion.split(".")[0]);
@@ -277,19 +311,22 @@
        *
        * A false result from this call does not necessarily mean the browser is NOT Angular 16 capable
        *
-       * @returns boolean
+       * @returns {boolean}
        */
       function isKnownGoodBrowserVersion() {
         var userAgent = navigator.userAgent;
         console.log(userAgent);
 
-        if (userAgent.indexOf("MSIE") !== -1 || userAgent.indexOf("Trident") !== -1) {
+        if (
+          userAgent.indexOf("MSIE") !== -1 ||
+          userAgent.indexOf("Trident") !== -1
+        ) {
           var versionMatch = userAgent.match(/(MSIE|rv:|rv\:)([\d\.]+)/);
           if (versionMatch) {
-              var version = versionMatch[2];
-              var mVer = majorVersion(version);
-              console.log("Internet Explorer version: " + mVer);
-              return false; // no version of IE is Angular 16 capable
+            var version = versionMatch[2];
+            var mVer = majorVersion(version);
+            console.log("Internet Explorer version: " + mVer);
+            return false; // no version of IE is Angular 16 capable
           }
         } else if (userAgent.indexOf("Edg") !== -1) {
           var versionMatch = userAgent.match(/Edg\/([\d\.]+)/);
@@ -332,7 +369,7 @@
           }
         } else {
           console.log("Browser not recognized");
-          // sepcifies that we haven't checked so we don't really know one way or the other
+          // specifies that we haven't checked, so we don't really know one way or the other
           return undefined;
         }
       }
@@ -340,16 +377,26 @@
       /**
        * display the userAgent string to simplify data collection during testing
        */
-       function showUserAgent() {
+      function showUserAgent() {
         document.getElementById("ua").innerText = navigator.userAgent;
-       }
+      }
 
-       /**
+      /**
+       * redirects to the home page for the angular app
+       */
+      function redirectToLoginPage() {
+        window.location.href = "start.html";
+      }
+
+      /**
        * evaluates browser version and available features
        * displays the warning for unsupported browsers
        * redirects to the angular app for modern browsers
        */
       function checkBrowser() {
+        var sneakyMode = getQueryStringValue("sneakyMode");
+        var isDebug = sneakyMode == "yes";
+        console.log("isDebug: " + isDebug);
 
         showUserAgent();
 
@@ -367,18 +414,22 @@
 
         setTimeout(function () {
           if (isAngularCapable) {
-            // window.location.href = "start.html";
-            // temporarily enable testing both paths
-            if (confirm("browser is probably ok... try translations anyway?")) {
-              displayBrowserWarning();
+            if (isDebug) {
+              if (confirm("browser is probably ok... try translations anyway?")) {
+                displayBrowserWarning();
+              } else {
+                redirectToLoginPage();
+              }
             } else {
-              window.location.href = "start.html";
+              redirectToLoginPage();
             }
           } else {
-            // displayBrowserWarning();
-            // temporarily enable testing both paths
-            if (confirm("browser is probably not ok... try angular anyway?")) {
-              window.location.href = "start.html";
+            if (isDebug) {
+              if (confirm("browser is probably not ok... try angular anyway?")) {
+                redirectToLoginPage();
+              } else {
+                displayBrowserWarning();
+              }
             } else {
               displayBrowserWarning();
             }
