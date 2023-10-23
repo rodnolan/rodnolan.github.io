@@ -1,5 +1,5 @@
 {
-  "UNSUPPORTED_BROWSER": "translated Este navegador ya no es compatible",
-  "UNSUPPORTED_BROWSER_INSTALL": "translated Instale y use la última versión de uno de los siguientes navegadores:",
-  "UNSUPPORTED_BROWSER_TXT": "translated Su navegador es muy antiguo y es posible que no disponga de las últimas actualizaciones de seguridad. Esta aplicación ya no será compatible con este navegador muy pronto. Si continúa usando este navegador, no podrá acceder a esta aplicación en el futuro."
+  "UNSUPPORTED_BROWSER": "Navegador web no compatible",
+  "UNSUPPORTED_BROWSER_INSTALL": "Esto explica cómo solucionarlo.",
+  "UNSUPPORTED_BROWSER_TXT": "Esto explica por qué hay un problema."
 }

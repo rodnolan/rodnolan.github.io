@@ -1,5 +1,5 @@
 {
-  "UNSUPPORTED_BROWSER": "translated This Browser is no Longer Supported",
-  "UNSUPPORTED_BROWSER_INSTALL": "translated Please install and use the latest version of one of the following browsers:",
-  "UNSUPPORTED_BROWSER_TXT": "translated The browser version you are currently using is very old and it may not have the latest security updates. This application will stop supporting this browser soon. Continuing to use this browser will prevent you from accessing this application in the future."
+  "UNSUPPORTED_BROWSER": "Unsupported Web Browser",
+  "UNSUPPORTED_BROWSER_INSTALL": "This explains how to fix it.",
+  "UNSUPPORTED_BROWSER_TXT": "This explains why there's a problem."
 }
