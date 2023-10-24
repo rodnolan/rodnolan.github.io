@@ -127,7 +127,7 @@
         xhr.send();
 
         xhr.onload = function () {
-          console.log("xhr.responseText" + xhr.responseText);
+          console.log("xhr.responseText: " + xhr.responseText);
 
           resultHandler(JSON.parse(xhr.responseText));
         };
@@ -171,6 +171,23 @@
           }
         }
         return idx > -1;
+      }
+
+      /**
+       * Sets a cookie with an optional expiry
+       *
+       * @param cookieName {string} the name of the cookie to set
+       * @param didTestPass {boolean} the value for the cookie; indicates whether this browser should be capable of running an Angular 16 app
+       * @param daysToExpire {number} indicates when in the future the cookie should expire
+       */
+      function setBrowserCheckedCookie(cookieName, didTestPass, daysToExpire) {
+        var expires = "";
+        if (daysToExpire) {
+          var date = new Date();
+          date.setTime(date.getTime() + daysToExpire * 24 * 60 * 60 * 1000);
+          expires = "; expires=" + date.toGMTString();
+        }
+        document.cookie = cookieName + "=" + didTestPass + expires + "; path=/";
       }
 
       /**
@@ -311,7 +328,8 @@
        *
        * A false result from this call does not necessarily mean the browser is NOT Angular 16 capable
        *
-       * @returns {boolean}
+       * @returns {boolean | undefined} false means the browser can not handle Angular 16; true means it can;
+       * undefined means this browser wasn't tested so we don't know for sure, one way or the other
        */
       function isKnownGoodBrowserVersion() {
         var userAgent = navigator.userAgent;
@@ -377,7 +395,7 @@
       /**
        * display the userAgent string to simplify data collection during testing
        */
-      function showUserAgent() {
+      function displayUserAgent() {
         document.getElementById("ua").innerText = navigator.userAgent;
       }
 
@@ -389,33 +407,93 @@
       }
 
       /**
+       * Check a cookie to determine whether the browser check has already been done
+       *
+       * @param isDebugMode {boolean} if true, displays a prompt before redirecting
+       *
+       * @returns {boolean} false if the check hasn't been done or has failed or if dev wants to proceed on this page anyway; true otherwise
+       */
+      function doCookieCheck(isDebugMode) {
+        var hasBrowserAlreadyPassedAngular16Check = getCookieWithName("isBrowserAngular16Capable") == "yes";
+
+        if (hasBrowserAlreadyPassedAngular16Check) {
+          console.log("This browser has already been verified to work in Angular 16... cookie says: " + getCookieWithName("isBrowserAngular16Capable"));
+          if (!isDebugMode) {
+            redirectToLoginPage();
+          } else {
+            if (confirm('This browser is fine... go to angular?')) {
+              redirectToLoginPage();
+            } else {
+              return false;
+            }
+          }
+        } else {
+          console.log("This browser has not been checked yet or the check has failed... cookie says: " + getCookieWithName("isBrowserAngular16Capable"));
+          return false;
+        }
+        return false;
+      }
+
+      /**
+       * @returns {boolean} true if "?debugMode=yes" is present; false otherwise
+       */
+      function getIsDebugMode() {
+        var qsValue = getQueryStringValue("debugMode");
+        var isDebugMode = qsValue == "yes";
+        console.log("isDebugMode: " + isDebugMode);
+        return isDebugMode;
+      }
+
+      /**
+       * stores a string value in a cookie to indicate whether this browser
+       * should be capable of running an angular 16 app: "yes" or "no" accordingly
+       *
+       * @param {boolean} isThisBrowserAngularCapable
+       */
+      function storeBrowserCheckStatus(isThisBrowserAngularCapable) {
+        var cookieValue;
+        if (isThisBrowserAngularCapable) {
+          cookieValue = "yes";
+        } else {
+          cookieValue = "no";
+        }
+        console.log("setting browser status cookie to " + cookieValue);
+        setBrowserCheckedCookie("isBrowserAngular16Capable", cookieValue, 30);
+      }
+
+      /**
        * evaluates browser version and available features
-       * displays the warning for unsupported browsers
+       * displays the warning for unsupported browsers or
        * redirects to the angular app for modern browsers
        */
       function checkBrowser() {
-        var sneakyMode = getQueryStringValue("sneakyMode");
-        var isDebug = sneakyMode == "yes";
-        console.log("isDebug: " + isDebug);
 
-        showUserAgent();
+        var isDebugMode = getIsDebugMode();
+        var didCheckPass = doCookieCheck(isDebugMode);
+        if (didCheckPass) {
+          // if this check passes, we could be redirected to the angular app
+          // so this is the end of the line for this script
+          return;
+        }
+
+        displayUserAgent();
 
         var goodVersion = isKnownGoodBrowserVersion();
         var goodFeatures = hasRequiredFeatures();
         console.log("Version check: ", goodVersion);
         console.log("Feature check: ", goodFeatures);
-        // this adjustment should solve that
-        var isAngularCapable = (goodVersion == true) || (goodVersion == undefined && goodFeatures);
+        var isThisBrowserAngularCapable = (goodVersion == true) || (goodVersion == undefined && goodFeatures);
+        storeBrowserCheckStatus(isThisBrowserAngularCapable);
 
-        // safari 14 fails trying to load the translations from https://rodnolan.github.io/assets/i18n/en-us.json
-        // this only happens on SL, not on a real mac
+        // todo: verify whether the safari 14 failure that you see only on SL is a real problem that we need to fix
+        // fails trying to load the translations from https://rodnolan.github.io/assets/i18n/en-us.json
         // the SL vagrant machine is probably case sensitive and the file uses UPPERCASE for the country code
         // whereas the request is probably using the lowercase version of the whole string
 
         setTimeout(function () {
-          if (isAngularCapable) {
-            if (isDebug) {
-              if (confirm("browser is probably ok... try translations anyway?")) {
+          if (isThisBrowserAngularCapable) {
+            if (isDebugMode) {
+              if (confirm("browser looks good... try translations before leaving?")) {
                 displayBrowserWarning();
               } else {
                 redirectToLoginPage();
@@ -424,8 +502,8 @@
               redirectToLoginPage();
             }
           } else {
-            if (isDebug) {
-              if (confirm("browser is probably not ok... try angular anyway?")) {
+            if (isDebugMode) {
+              if (confirm("browser looks bad... try angular anyway?")) {
                 redirectToLoginPage();
               } else {
                 displayBrowserWarning();
