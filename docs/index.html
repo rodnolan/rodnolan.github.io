@@ -80,6 +80,61 @@
     </div>
     <script>
 
+      /**
+       * This variable is populated by the index transformer
+       */
+      var angularScriptsArray;
+
+      /**
+       * stores a reference to the scripts that comprise the angular application
+       *
+       * NOTE: this angular application does not load automatically
+       * this function is required to enable the app to be loaded at runtime
+       *
+       * works in conjunction with
+       * DO NOT DELETE THIS FUNCTION
+       *
+       * This project uses a custom webpack build plugin to remove the
+       * hard coded <script> tags produced by the default angular builder
+       * and replace them with a call to this function.
+       *
+       * This transformation is required to allow the application to be
+       * loaded ON DEMAND only AFTER the browser is verified to be capable
+       * of running a modern angular application without crashing with the
+       * white screen of death
+       *
+       * The transformation is implemented in `./index-html-transformer.ts`
+       * The relevant configuration in `./angular.json` can be found at
+       *  "projects" > {project-name} > "architect" > "build" > "builder"
+       *  "projects" > {project-name} > "architect" > "build" > "options" > "indexTransform"
+       */
+       function storeAngularScripts(scripts) {
+        angularScriptsArray = scripts;
+      }
+
+      /**
+       * This function is called to load the source scripts for the angular app
+       * this happens ONLY IF AND AFTER we determine that the browser will run
+       * the app without crashing
+       */
+      function loadAngular(scripts) {
+        if (scripts.length == 0) {
+          throw new Error('there are no source scripts to load... the application can NOT be bootstrapped');
+        }
+
+        function loadScript(url) {
+          var script = document.createElement("script");
+          script.type = "module";
+          script.src = url;
+          document.body.appendChild(script);
+        }
+
+        for (var i = 0; i < scripts.length; i++) {
+          console.log('Loading ' + scripts[i]);
+          loadScript(scripts[i]);
+        }
+      }
+
       var minimumBrowserVersions = {
         chrome: 85,
         firefox: 90,
@@ -404,10 +459,10 @@
       }
 
       /**
-       * redirects to the home page for the angular app
+       * Loads the compiled scripts for the angular app and displays the app-root element
        */
-      function displayAngularApp() {
-        // window.location.href = "start.html";
+      function displayAngularApp(sourceScripts) {
+        loadAngular(sourceScripts);
         document.getElementById("angular16AppContainer").style.display = "block";
       }
 
@@ -486,10 +541,10 @@
           console.log("<directTraffic>")
           if (isAble) {
             if (!isDebug) {
-              displayAngularApp();
+              displayAngularApp(angularScriptsArray);
             } else {
               if (confirm("<directTraffic> one last confirmation... OK for angular app; CANCEL for warning")) {
-                displayAngularApp();
+                displayAngularApp(angularScriptsArray);
               } else {
                 displayBrowserWarning();
               }
@@ -501,7 +556,7 @@
               if (confirm("<directTraffic> one last confirmation... OK for warning; CANCEL to try angular app anyway")) {
                 displayBrowserWarning();
               } else {
-                displayAngularApp();
+                displayAngularApp(angularScriptsArray);
               }
             }
           }
@@ -510,10 +565,10 @@
         if (didCookieCheckPass) {
           if (!isDebugMode) {
             console.log("<checkBrowser> cookie is (" + cookie + ") so this browser has already been verified; skipping the browser check and redirecting to the angular app");
-            displayAngularApp();
+            displayAngularApp(angularScriptsArray);
           } else {
             if (confirm("<checkBrowser> This browser has already been verified... OK for angular app; CANCEL for warning")) {
-              displayAngularApp();
+              displayAngularApp(angularScriptsArray);
             } else {
               console.log("<checkBrowser> testing translations in modern browser");
               isThisBrowserAngularCapable = evaluateBrowser();
@@ -531,25 +586,11 @@
         }
       }
 
-      function loadScript(url) {
-        var script = document.createElement("script");
-        script.type = "module";
-        script.src = url;
-
-        document.body.appendChild(script);
-      }
-      function loadAngular(scripts) {
-        for (var i=0; i < scripts.length; i++) {
-          console.log('Going to attempt to load ' + scripts[i]);
-          loadScript(scripts[i]);
-        }
-      }
-
       document.addEventListener("DOMContentLoaded", checkBrowser);
     </script>
 
     <script>
-      document.addEventListener("DOMContentLoaded", () => loadAngular(["runtime.9770a635a7a2a114.js","polyfills.8fd6c3e12f2ac1a3.js","main.7d9c4d9a745ed0a8.js"]));
+      document.addEventListener("DOMContentLoaded", () => storeAngularScripts(["runtime.9770a635a7a2a114.js","polyfills.8fd6c3e12f2ac1a3.js","main.7d9c4d9a745ed0a8.js"]));
     </script>
     </body>
 </html>
