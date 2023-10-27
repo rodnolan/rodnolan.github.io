@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>BROWSER CHECK</title>
+    <title>ANGULAR APP AND BROWSER CHECK ALL-IN-ONE</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
@@ -72,10 +72,12 @@
             </button>
           </div>
         </div>
-        <a href="start.html">go to the angular app anyway</a>
+        <!-- <a href="start.html">go to the angular app anyway</a> -->
       </div>
     </div>
-
+    <div id="angular16AppContainer" style="display: none">
+      <app-root></app-root>
+    </div>
     <script>
 
       var minimumBrowserVersions = {
@@ -404,8 +406,9 @@
       /**
        * redirects to the home page for the angular app
        */
-      function redirectToLoginPage() {
-        window.location.href = "start.html";
+      function displayAngularApp() {
+        // window.location.href = "start.html";
+        document.getElementById("angular16AppContainer").style.display = "block";
       }
 
       /**
@@ -483,10 +486,10 @@
           console.log("<directTraffic>")
           if (isAble) {
             if (!isDebug) {
-              redirectToLoginPage();
+              displayAngularApp();
             } else {
               if (confirm("<directTraffic> one last confirmation... OK for angular app; CANCEL for warning")) {
-                redirectToLoginPage();
+                displayAngularApp();
               } else {
                 displayBrowserWarning();
               }
@@ -498,7 +501,7 @@
               if (confirm("<directTraffic> one last confirmation... OK for warning; CANCEL to try angular app anyway")) {
                 displayBrowserWarning();
               } else {
-                redirectToLoginPage();
+                displayAngularApp();
               }
             }
           }
@@ -507,10 +510,10 @@
         if (didCookieCheckPass) {
           if (!isDebugMode) {
             console.log("<checkBrowser> cookie is (" + cookie + ") so this browser has already been verified; skipping the browser check and redirecting to the angular app");
-            redirectToLoginPage();
+            displayAngularApp();
           } else {
             if (confirm("<checkBrowser> This browser has already been verified... OK for angular app; CANCEL for warning")) {
-              redirectToLoginPage();
+              displayAngularApp();
             } else {
               console.log("<checkBrowser> testing translations in modern browser");
               isThisBrowserAngularCapable = evaluateBrowser();

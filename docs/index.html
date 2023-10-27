@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>BROWSER CHECK</title>
+    <title>ANGULAR APP AND BROWSER CHECK ALL-IN-ONE</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
@@ -405,7 +405,7 @@
        * redirects to the home page for the angular app
        */
       function redirectToLoginPage() {
-        window.location.href = "start.html";
+        // window.location.href = "start.html";
       }
 
       /**
@@ -530,5 +530,24 @@
 
       document.addEventListener("DOMContentLoaded", checkBrowser);
     </script>
-  </body>
+
+    <script>
+      function loadScript(url, callback) {
+        var script = document.createElement("script");
+        script.type = "module"; // or 'text/javascript' for non-module scripts
+        script.src = url;
+
+        document.body.appendChild(script);
+        console.log("appended script with src: " + url);
+      }
+      function loadAngular() {
+        var scripts = [undefined];
+        for (var i=0; i< scripts.length; i++) {
+          console.log('Going to attempt to load ' + scripts[i]);
+          loadScript(scripts[i]);
+        }
+      }
+      document.addEventListener(DOMContentLoaded, loadAngular);
+    </script>
+    </body>
 </html>
