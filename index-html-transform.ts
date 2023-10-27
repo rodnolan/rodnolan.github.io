@@ -51,7 +51,7 @@ export default (targetOptions: TargetOptions, indexHtml: string) => {
           loadScript(scripts[i]);
         }
       }
-      document.addEventListener(DOMContentLoaded, loadAngular);
+      document.addEventListener("DOMContentLoaded", loadAngular);
     </script>`;
   return `${indexHtml.slice(0, startIndex)}
     ${magic}
