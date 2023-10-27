@@ -1,18 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-critters-container>
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
     <title>ANGULAR APP AND BROWSER CHECK ALL-IN-ONE</title>
-    <base href="/" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
-      integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
-      crossorigin="anonymous"
-    />
-  </head>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+  <link rel="stylesheet" href="styles.ef46db3751d8e999.css"></head>
   <body>
     <p id="ua" style="font-size: larger; padding: 2rem;"></p>
     <div id="warning-message" style="display: none">
@@ -30,44 +25,23 @@
           DEFAULT ENGLISH To continue using this application, you must install
           and use the latest version of one of the following browsers:
         </p>
-        <hr />
+        <hr>
         <div class="row my-4">
           <div class="col">
-            <button
-              class="btn btn-block btn-light"
-              onclick="openLink('https://www.google.com/chrome/')"
-            >
-              <img
-                src="assets/images/chrome.png"
-                height="60px"
-                alt="download Google Chrome"
-              />
+            <button class="btn btn-block btn-light" onclick="openLink('https://www.google.com/chrome/')">
+              <img src="assets/images/chrome.png" height="60px" alt="download Google Chrome">
               <span style="white-space: nowrap">Google Chrome</span>
             </button>
           </div>
           <div class="col">
-            <button
-              class="btn btn-block btn-light"
-              onclick="openLink('https://www.microsoft.com/edge')"
-            >
-              <img
-                src="assets/images/edge.png"
-                height="60px"
-                alt="download Microsoft Edge"
-              />
+            <button class="btn btn-block btn-light" onclick="openLink('https://www.microsoft.com/edge')">
+              <img src="assets/images/edge.png" height="60px" alt="download Microsoft Edge">
               <span style="white-space: nowrap">Microsoft Edge</span>
             </button>
           </div>
           <div class="col">
-            <button
-              class="btn btn-block btn-light"
-              onclick="openLink('https://support.apple.com/en-us/HT204416')"
-            >
-              <img
-                src="assets/images/safari.png"
-                height="60px"
-                alt="download Safari"
-              />
+            <button class="btn btn-block btn-light" onclick="openLink('https://support.apple.com/en-us/HT204416')">
+              <img src="assets/images/safari.png" height="60px" alt="download Safari">
               <span style="white-space: nowrap">Safari</span>
             </button>
           </div>
@@ -589,7 +563,7 @@
         }
       }
     </script>
-
+  
     <script>
       function begin() {
         try {
