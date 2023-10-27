@@ -21,18 +21,25 @@ function extractScriptsSrc(inputString: string, startString: string = '<script s
 }
 
 export default (targetOptions: TargetOptions, indexHtml: string) => {
-  console.log("\nexcerpt of index.html before processing:\n"+ indexHtml.slice(-400));
+  console.log("\nexcerpt of index.html PRE processing:\n"+ indexHtml.slice(-400));
   var scripts = extractScriptsSrc(indexHtml);
   var startIndex = indexHtml.indexOf('<script src="');
   var endIndex = indexHtml.lastIndexOf("</body>");
   var magic = `<script>
-      document.addEventListener("DOMContentLoaded", () => storeAngularScripts(${JSON.stringify(scripts)}));
+      function begin() {
+        try {
+          storeAngularScripts(${JSON.stringify(scripts)})
+        } catch (e) {
+          console.log("There was an error getting things started: "+ e);
+        }
+      }
+      document.addEventListener("DOMContentLoaded", begin);
     </script>`;
   var transformedIndexHtml = `${indexHtml.slice(0, startIndex)}
     ${magic}
     ${indexHtml.slice(endIndex)}`;
 
-    console.log("\nexcerpt of index.html after processing:\n"+transformedIndexHtml.slice(-400));
+    console.log("\nexcerpt of index.html POST processing:\n"+transformedIndexHtml.slice(-400));
     return transformedIndexHtml;
 };
 

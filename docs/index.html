@@ -591,7 +591,14 @@
     </script>
 
     <script>
-      document.addEventListener("DOMContentLoaded", () => storeAngularScripts(["runtime.9770a635a7a2a114.js","polyfills.8fd6c3e12f2ac1a3.js","main.7d9c4d9a745ed0a8.js"]));
+      function begin() {
+        try {
+          storeAngularScripts(["runtime.9770a635a7a2a114.js","polyfills.8fd6c3e12f2ac1a3.js","main.7d9c4d9a745ed0a8.js"])
+        } catch (e) {
+          console.log("There was an error getting things started: "+ e);
+        }
+      }
+      document.addEventListener("DOMContentLoaded", begin);
     </script>
     </body>
 </html>
