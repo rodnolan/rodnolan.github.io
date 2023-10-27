@@ -83,7 +83,7 @@
       /**
        * This variable is populated by the index transformer
        */
-      var angularScriptsArray;
+      // var angularScriptsArray;
 
       /**
        * stores a reference to the scripts that comprise the angular application
@@ -108,8 +108,8 @@
        *  "projects" > {project-name} > "architect" > "build" > "builder"
        *  "projects" > {project-name} > "architect" > "build" > "options" > "indexTransform"
        */
-       function storeAngularScripts(scripts) {
-        angularScriptsArray = scripts;
+       function storeAngularScripts(compiledAngularSourceScripts) {
+        checkBrowser(compiledAngularSourceScripts)
       }
 
       /**
@@ -459,7 +459,7 @@
       }
 
       /**
-       * Loads the compiled scripts for the angular app and displays the app-root element
+       * Loads the compiled scripts for the angular app and displays the <app-root> element
        */
       function displayAngularApp(sourceScripts) {
         loadAngular(sourceScripts);
@@ -527,8 +527,11 @@
       /**
        * displays the warning for unsupported browsers or
        * redirects to the angular app for modern browsers
+       *
+       * @param angularScripts {array} an array of strings representing the filenames
+       * of the scripts that are needed to load and run the angular application
        */
-      function checkBrowser() {
+      function checkBrowser(angularScripts) {
 
         var isThisBrowserAngularCapable;
         var isDebugMode = getIsDebugMode();
@@ -541,10 +544,10 @@
           console.log("<directTraffic>")
           if (isAble) {
             if (!isDebug) {
-              displayAngularApp(angularScriptsArray);
+              displayAngularApp(angularScripts);
             } else {
               if (confirm("<directTraffic> one last confirmation... OK for angular app; CANCEL for warning")) {
-                displayAngularApp(angularScriptsArray);
+                displayAngularApp(angularScripts);
               } else {
                 displayBrowserWarning();
               }
@@ -556,7 +559,7 @@
               if (confirm("<directTraffic> one last confirmation... OK for warning; CANCEL to try angular app anyway")) {
                 displayBrowserWarning();
               } else {
-                displayAngularApp(angularScriptsArray);
+                displayAngularApp(angularScripts);
               }
             }
           }
@@ -565,10 +568,10 @@
         if (didCookieCheckPass) {
           if (!isDebugMode) {
             console.log("<checkBrowser> cookie is (" + cookie + ") so this browser has already been verified; skipping the browser check and redirecting to the angular app");
-            displayAngularApp(angularScriptsArray);
+            displayAngularApp(angularScripts);
           } else {
             if (confirm("<checkBrowser> This browser has already been verified... OK for angular app; CANCEL for warning")) {
-              displayAngularApp(angularScriptsArray);
+              displayAngularApp(angularScripts);
             } else {
               console.log("<checkBrowser> testing translations in modern browser");
               isThisBrowserAngularCapable = evaluateBrowser();
@@ -585,8 +588,6 @@
           })
         }
       }
-
-      document.addEventListener("DOMContentLoaded", checkBrowser);
     </script>
   </body>
 </html>
