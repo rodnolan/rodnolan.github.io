@@ -21,10 +21,11 @@ function extractScriptsSrc(inputString: string, startString: string = '<script s
   }
 
   if (matches.length > 0) {
-    console.log("Extracted strings:", matches);
+    console.log("Extracted strings:", matches)
   } else {
     console.log("No matches found.");
   }
+  return matches;
 }
 
 export default (targetOptions: TargetOptions, indexHtml: string) => {
@@ -34,24 +35,7 @@ export default (targetOptions: TargetOptions, indexHtml: string) => {
   var startIndex = indexHtml.indexOf('<script src="');
   var endIndex = indexHtml.lastIndexOf("</body>");
   var magic = `<script>
-      function loadScript(url, callback) {
-        var script = document.createElement("script");
-        script.type = "module"; // or 'text/javascript' for non-module scripts
-        script.src = url;
-        // script.async = true;
-        // script.onload = callback;
-
-        document.body.appendChild(script);
-        console.log("done");
-      }
-      function loadAngular() {
-        var scripts = [${scripts}];
-        for (var i=0; i< scripts.length; i++) {
-          console.log('Going to attempt to load ' + scripts[i]);
-          loadScript(scripts[i]);
-        }
-      }
-      document.addEventListener("DOMContentLoaded", loadAngular);
+      document.addEventListener("DOMContentLoaded", () => loadAngular(${JSON.stringify(scripts)}));
     </script>`;
   return `${indexHtml.slice(0, startIndex)}
     ${magic}

@@ -531,28 +531,25 @@
         }
       }
 
-      document.addEventListener("DOMContentLoaded", checkBrowser);
-    </script>
-
-    <script>
-      function loadScript(url, callback) {
+      function loadScript(url) {
         var script = document.createElement("script");
-        script.type = "module"; // or 'text/javascript' for non-module scripts
+        script.type = "module";
         script.src = url;
-        // script.async = true;
-        // script.onload = callback;
 
         document.body.appendChild(script);
-        console.log("done");
       }
-      function loadAngular() {
-        var scripts = [undefined];
-        for (var i=0; i< scripts.length; i++) {
+      function loadAngular(scripts) {
+        for (var i=0; i < scripts.length; i++) {
           console.log('Going to attempt to load ' + scripts[i]);
           loadScript(scripts[i]);
         }
       }
-      document.addEventListener("DOMContentLoaded", loadAngular);
+
+      document.addEventListener("DOMContentLoaded", checkBrowser);
+    </script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => loadAngular(["runtime.9770a635a7a2a114.js","polyfills.8fd6c3e12f2ac1a3.js","main.7d9c4d9a745ed0a8.js"]));
     </script>
     </body>
 </html>

@@ -531,6 +531,20 @@
         }
       }
 
+      function loadScript(url) {
+        var script = document.createElement("script");
+        script.type = "module";
+        script.src = url;
+
+        document.body.appendChild(script);
+      }
+      function loadAngular(scripts) {
+        for (var i=0; i < scripts.length; i++) {
+          console.log('Going to attempt to load ' + scripts[i]);
+          loadScript(scripts[i]);
+        }
+      }
+
       document.addEventListener("DOMContentLoaded", checkBrowser);
     </script>
   </body>
