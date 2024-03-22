@@ -223,8 +223,11 @@ function inject(text, id) {
 /**
  * displays the "old browser warning" markup
  * and populates the page with translated strings
+ *
+ * @param isUserAgentGood {boolean} true or false based on whether the userAgent inspection passes
+ * @param isFeatureSetGood {boolean} true or false based on whether the feature set inspection passes
  */
-function displayBrowserWarning() {
+function displayBrowserWarning(isUserAgentGood, isFeatureSetGood) {
   var locale = getLocale("locale");
   var url = "assets/i18n/" + locale + ".json";
   loadBootstrapStylesheet();
@@ -238,6 +241,8 @@ function displayBrowserWarning() {
 
     displayUserAgent();
 
+    inject(isUserAgentGood, "uaStatus");
+    inject(isFeatureSetGood, "featuresStatus");
     inject(title, "unsupported-browser-title");
     inject(message, "unsupported-browser-message");
     inject(install, "unsupported-browser-install");
@@ -430,7 +435,13 @@ function evaluateBrowser() {
   var isThisBrowserAngularCapable = (goodVersion == true) || (goodVersion == undefined && goodFeatures);
   storeBrowserCheckStatus(isThisBrowserAngularCapable);
 
-  return isThisBrowserAngularCapable;
+  return {
+    isThisBrowserAngularCapable: isThisBrowserAngularCapable,
+    goodUA: goodVersion,
+    goodFeatures: goodFeatures
+  };
+
+  isThisBrowserAngularCapable;
 }
 
 /**
@@ -452,13 +463,14 @@ function checkBrowser(scripts) {
     displayAngularApp(scripts);
   } else {
     log("<checkBrowser> cookie is (" + cookie + ") so browser has failed the check or has not been checked yet... proceeding with browser evaluation");
-    isThisBrowserAngularCapable = evaluateBrowser();
+    var browserDetails = evaluateBrowser();
+    isThisBrowserAngularCapable = browserDetails.isThisBrowserAngularCapable;
     var directTraffic = function (isAble) {
       log("<directTraffic>");
       if (isAble) {
         displayAngularApp(scripts);
       } else {
-        displayBrowserWarning();
+        displayBrowserWarning(browserDetails.goodUA, browserDetails.goodFeatures);
       }
     };
     setTimeout(function () {
