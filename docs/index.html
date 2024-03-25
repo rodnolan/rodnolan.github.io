@@ -9,9 +9,6 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="stylesheet" href="styles.ef46db3751d8e999.css"></head>
   <body>
-    <p id="ua" style="font-size: larger; padding: 2rem;"></p>
-    <p id="uaStatus"></p>
-    <p id="featuresStatus"></p>
     <div id="warning-message" style="display: none">
       <div class="modal-header">
         <h4 class="modal-title" id="unsupported-browser-title">
@@ -23,6 +20,8 @@
           DEFAULT ENGLISH The browser version you are using is too old to run
           this application.
         </p>
+        <p>User Agent Test: <span id="uaStatus"></span></p>
+        <p>Features Test: <span id="featuresStatus"></span></p>
         <p id="unsupported-browser-install">
           DEFAULT ENGLISH To continue using this application, you must install
           and use the latest version of one of the following browsers:
@@ -48,7 +47,8 @@
             </button>
           </div>
         </div>
-        <a href="index.html">start over</a> | <a href="index.html?debugMode=yes">in debugMode</a>
+        <p id="ua" style="font-size: larger; padding: 2rem;"></p>
+        <a href="index.html">start over</a> <!-- | <a href="index.html?debugMode=yes">in debugMode</a> -->
       </div>
     </div>
     <div id="angularContainer" style="display: none">
@@ -68,7 +68,7 @@
                 try {
                   // the startHere() function is defined in pre-flight-check.js
                   // the value for the argument is resolved into a JSON string at compile not, not runtime
-                  startHere([{"src":"runtime.9770a635a7a2a114.js","isModule":true,"isDefer":false},{"src":"polyfills.8fd6c3e12f2ac1a3.js","isModule":true,"isDefer":false},{"src":"main.7d9c4d9a745ed0a8.js","isModule":true,"isDefer":false}]);
+                  startHere([{"src":"runtime.9770a635a7a2a114.js","isModule":true,"isDefer":false},{"src":"polyfills.8fd6c3e12f2ac1a3.js","isModule":true,"isDefer":false},{"src":"main.08206926daee0879.js","isModule":true,"isDefer":false}]);
                 } catch (e) {
                   console.log("There was an error loading the page: " + e);
                 }

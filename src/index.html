@@ -8,9 +8,6 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
   </head>
   <body>
-    <p id="ua" style="font-size: larger; padding: 2rem;"></p>
-    <p id="uaStatus"></p>
-    <p id="featuresStatus"></p>
     <div id="warning-message" style="display: none">
       <div class="modal-header">
         <h4 class="modal-title" id="unsupported-browser-title">
@@ -22,6 +19,8 @@
           DEFAULT ENGLISH The browser version you are using is too old to run
           this application.
         </p>
+        <p>User Agent Test: <span id="uaStatus"></span></p>
+        <p>Features Test: <span id="featuresStatus"></span></p>
         <p id="unsupported-browser-install">
           DEFAULT ENGLISH To continue using this application, you must install
           and use the latest version of one of the following browsers:
@@ -68,7 +67,8 @@
             </button>
           </div>
         </div>
-        <a href="index.html">start over</a> | <a href="index.html?debugMode=yes">in debugMode</a>
+        <p id="ua" style="font-size: larger; padding: 2rem;"></p>
+        <a href="index.html">start over</a> <!-- | <a href="index.html?debugMode=yes">in debugMode</a> -->
       </div>
     </div>
     <div id="angularContainer" style="display: none">
