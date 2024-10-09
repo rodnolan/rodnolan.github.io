@@ -1,0 +1,10 @@
+{
+  "name": "rodnolan.github.io.mono",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "workspaces": [
+    "ng16",
+    "ng18"
+  ]
+}

@@ -1,0 +1,89 @@
+
+        <!DOCTYPE html>
+<html lang="en" data-critters-container>
+  <head>
+    <meta charset="utf-8">
+    <title>ANGULAR 16 BROWSER CHECK</title>
+    <base href="/ng16/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="styles.ef46db3751d8e999.css"></head>
+  <body>
+    <div id="warning-message" style="display: none">
+      <div class="modal-header">
+        <h4 class="modal-title" id="unsupported-browser-title">
+          DEFAULT ENGLISH This Browser Is No Longer Supported!!!
+        </h4>
+      </div>
+      <div class="modal-body">
+        <p id="unsupported-browser-message">
+          DEFAULT ENGLISH The browser version you are using is too old to run
+          this application.
+        </p>
+        <p>User Agent Test: <span id="uaStatus"></span></p>
+        <p>Features Test: <span id="featuresStatus"></span></p>
+        <p id="unsupported-browser-install">
+          DEFAULT ENGLISH To continue using this application, you must install
+          and use the latest version of one of the following browsers:
+        </p>
+        <hr>
+        <div class="row my-4">
+          <div class="col">
+            <button class="btn btn-block btn-light" onclick="openLink('https://www.google.com/chrome/')">
+              <img src="assets/images/chrome.png" height="55px" alt="download Google Chrome">
+              <span id="browser-chrome" style="white-space: nowrap">Google Chrome</span>
+            </button>
+          </div>
+          <div class="col">
+            <button class="btn btn-block btn-light" onclick="openLink('https://www.microsoft.com/edge')">
+              <img src="assets/images/edge.png" height="60px" alt="download Microsoft Edge">
+              <span id="browser-edge" style="white-space: nowrap">Microsoft Edge</span>
+            </button>
+          </div>
+          <div class="col">
+            <button class="btn btn-block btn-light" onclick="openLink('https://support.apple.com/en-us/HT204416')">
+              <img src="assets/images/safari.png" height="60px" alt="download Safari">
+              <span id="browser-safari" style="white-space: nowrap">Safari</span>
+            </button>
+          </div>
+          <div class="col">
+            <button class="btn btn-block btn-light" (click)="openLink('https://www.mozilla.org/firefox/')">
+              <img src="assets/images/firefox.png" height="55px" alt="download Firefox"><br>
+              <span id="browser-firefox" style="white-space: nowrap">Mozilla Firefox</span>
+            </button>
+          </div>
+        </div>
+        <p id="ua" style="font-size: larger; padding: 2rem;"></p>
+        <a href="index.html">start over</a> <!-- | <a href="index.html?debugMode=yes">in debugMode</a> -->
+      </div>
+    </div>
+    <div id="angularContainer" style="display: none">
+      <app-root></app-root>
+    </div>
+  
+        
+
+        <!-- pre-flight-check.js contains the functions that evaluate the browser and implement -->
+        <!-- the conditional logic to render either the angular app or the browser upgrade prompt -->
+        <!-- most importantly, it contains the startHere function, which is invoked below -->
+        <!-- this file must be included as is (not transpiled) so put it in the assets folder -->
+        <script type="text/javascript" src="assets/pre-flight-check.js"></script>
+
+        <script>
+            function begin() {
+                try {
+                  // the startHere() function is defined in pre-flight-check.js
+                  // the value for the argument is resolved into a JSON string at compile not, not runtime
+                  startHere([{"src":"runtime.f05c2aa2780f58d8.js","isModule":true,"isDefer":false},{"src":"polyfills.35be29f6ca04e79e.js","isModule":true,"isDefer":false},{"src":"main.19fd92427a83605c.js","isModule":true,"isDefer":false}]);
+                } catch (e) {
+                  console.log("There was an error loading the page: " + e);
+                }
+            }
+            document.addEventListener("DOMContentLoaded", begin);
+        </script>
+
+    
+        </body>
+</html>
+
+    
